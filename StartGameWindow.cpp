@@ -1,4 +1,7 @@
-#include <bits/stdc++.h>
+#include <vector>
+#include <string>
+#include <ctime>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 using namespace std;
 using namespace sf;
@@ -66,10 +69,6 @@ void StartGameWindow()
                 if(click == "left")
                 {
                     start_game_window.close();
-                    if(i == 1)
-                    {
-                        InGameWindow();
-                    }
                 }
                 B[i].button.setFillColor(Color::Red);
             }
@@ -78,12 +77,10 @@ void StartGameWindow()
 
         start_game_window.clear(Color::White);
         start_game_window.draw(start_game_background);
-
         for(int i = 0; i < 5; ++i)
         {
             start_game_window.draw(B[i].button);
         }
-
         start_game_window.display();
     }
 }
