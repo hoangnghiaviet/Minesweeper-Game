@@ -32,9 +32,11 @@ void StartGameWindow()
     Sprite start_game_background;
     start_game_background.setTexture(start_game_background_texture);
 
+    int total_button = 5;
+
     // button texture
-    Texture button_texture[5];
-    for(int i = 0; i < 5; ++i)
+    Texture button_texture[total_button];
+    for(int i = 0; i < total_button; ++i)
     {
         char number = '0' + i;
         string image_path = "GameData/Image/start_game_button";
@@ -48,8 +50,8 @@ void StartGameWindow()
     }
 
     // button constructor
-    ButtonClass start_game_button[5];
-    for(int i = 0; i < 5; ++i)
+    ButtonClass start_game_button[total_button];
+    for(int i = 0; i < total_button; ++i)
     {
         start_game_button[i] = ButtonClass(Vector2f(200.f, 30.f), Vector2f(200, 270 + i * 50));
         start_game_button[i].button.setTexture(&button_texture[i]);
@@ -67,25 +69,16 @@ void StartGameWindow()
             }
         }
 
-        string click = get_mouse_clicked();
-        Vector2i mouse_position = Mouse::getPosition(start_game_window);
-        for(int i = 0; i < 5; ++i)
+        int clicked_button = get_button_clicked(start_game_button, total_button, start_game_window);
+        if(clicked_button != -1)
         {
-            if(check_mouse_clicked(mouse_position, start_game_button[i].button.getPosition(), start_game_button[i].button.getSize()))
-            {
-                if(click == "left")
-                {
-                    start_game_window.close();
-                    move_to_start_game_menu(i);
-                }
-                start_game_button[i].button.setFillColor(Color::Red);
-            }
-            else start_game_button[i].button.setFillColor(Color::White);
+            start_game_window.close();
+            move_to_start_game_menu(clicked_button);
         }
 
         start_game_window.clear(Color::White);
         start_game_window.draw(start_game_background);
-        for(int i = 0; i < 5; ++i)
+        for(int i = 0; i < total_button; ++i)
         {
             start_game_window.draw(start_game_button[i].button);
         }
