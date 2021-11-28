@@ -54,6 +54,10 @@ private:
 
     sf::RenderWindow window;
 
+    //Background
+    sf::Sprite background;
+    sf::Texture background_t;
+
     //Board
     std::vector<sf::RectangleShape>cells;
 

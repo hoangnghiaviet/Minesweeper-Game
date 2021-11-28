@@ -28,7 +28,7 @@ void openSelectedWindow(int window_number)
 void NewGameWindow()
 {
     //NewGameWindow should give the player the options to change the below values
-    unsigned width = 16, height = 16, num_mines = 40;
+    unsigned width = 30, height = 16, num_mines = 99;
 
     GameWindow board(width, height, num_mines);
     board.initBoard();

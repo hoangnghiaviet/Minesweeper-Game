@@ -24,16 +24,20 @@ void GameWindow::initBoard() {
         }
     }
 
+    //Set up the background
+    background_t.loadFromFile("game_texture/Image/background.jpg");
+    background.setTexture(background_t);
+
     //Set up the clock
     clock.setFont(font);
     clock.setCharacterSize(24);
-    clock.setFillColor(sf::Color::Yellow);
+    clock.setFillColor(sf::Color::Black);
     clock.setPosition(startPos_x, startPos_y - 60);
 
     //Set up the score
     score.setFont(font);
     score.setCharacterSize(24);
-    score.setFillColor(sf::Color::Yellow);
+    score.setFillColor(sf::Color::Black);
     score.setString("Score: 0");
     score.setPosition(startPos_x, startPos_y - 30);
 }
@@ -186,6 +190,8 @@ void GameWindow::updateScore(int new_num_moves) {
 //Handle the rendering of entities
 void GameWindow::render() {
     window.clear();
+
+    window.draw(background);
 
     window.draw(clock);
     window.draw(score);
