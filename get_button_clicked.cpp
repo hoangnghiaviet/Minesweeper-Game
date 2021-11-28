@@ -12,7 +12,7 @@ using namespace sf;
 // Function will return -1 if no button is clicked
 // Otherwise function will return the number corresponding to the button
 
-int get_button_clicked(ButtonClass button[], int total_button, RenderWindow &window)
+int get_button_clicked(vector<ButtonClass> &button, int total_button, RenderWindow &window)
 {
     string click = get_mouse_clicked();
     Vector2i mouse_position = Mouse::getPosition(window);
