@@ -21,11 +21,11 @@ using namespace sf;
 
 void StartGameWindow()
 {
-    RenderWindow start_game_window(VideoMode(600, 600), "MineSweeper", Style::Close);
+    RenderWindow start_game_window(VideoMode(800, 600), "MineSweeper", Style::Close);
 
     // back ground texture
     Texture start_game_background_texture;
-    start_game_background_texture.loadFromFile("GameData/Image/start_game_background.jpg");
+    start_game_background_texture.loadFromFile("GameData/Image/start_game_background.png");
     Sprite start_game_background;
     start_game_background.setTexture(start_game_background_texture);
 
@@ -48,7 +48,7 @@ void StartGameWindow()
     start_game_button.resize(total_button);
     for(int i = 0; i < total_button; ++i)
     {
-        start_game_button[i] = ButtonClass(Vector2f(200.f, 30.f), Vector2f(200, 270 + i * 50));
+        start_game_button[i] = ButtonClass(Vector2f(240.f, 30.f), Vector2f(280, 270 + i * 60));
         start_game_button[i].button.setTexture(&button_texture[i]);
     }
 
