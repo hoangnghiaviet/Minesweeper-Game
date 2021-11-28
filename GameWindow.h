@@ -42,7 +42,7 @@ public:
     void render();
 
     //Constructors
-    GameWindow();
+    GameWindow() = default;
     GameWindow(unsigned, unsigned, unsigned);
 
     //Destructors
@@ -76,8 +76,7 @@ private:
     int new_num_moves = 0;
 
     //Input delay
-    float input_delay = 0;
-    float input_delay_max = 80.f;
+    bool isMouseHeld = false;
 
     //Game logic
     unsigned width, height;

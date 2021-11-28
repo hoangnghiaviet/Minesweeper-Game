@@ -74,6 +74,16 @@ void GameWindow::update() {
     sf::Vector2i mousePosWindow = sf::Mouse::getPosition(window);
     sf::Vector2f mousePosView = window.mapPixelToCoords(mousePosWindow);
 
+    //Illuminate a cell if the mouse is hovering on the cell
+    for (int i = 0; i < cells.size(); ++i) {
+        if (cells[i].getGlobalBounds().contains(mousePosView)) {
+            cells[i].setFillColor(sf::Color::Cyan);
+        }
+        else {
+            cells[i].setFillColor(sf::Color::White);
+        }
+    }
+
     //Left mouse button -> Open cell
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         for (int i = 0; i < cells.size(); ++i) {
@@ -113,11 +123,12 @@ void GameWindow::update() {
         }
     }
 
-    if (input_delay >= input_delay_max) {
-        input_delay = 0.f;
+    //Right mouse button -> Set flag
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+        if (isMouseHeld == false) {
 
-        //Right mouse button -> Set flag
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+            isMouseHeld = true;
+
             for (int i = 0; i < cells.size(); ++i) {
                 if (cells[i].getGlobalBounds().contains(mousePosView)) {
                     int y = i % height, x = i / height;
@@ -129,7 +140,7 @@ void GameWindow::update() {
         }
     }
     else {
-        input_delay += 1.f;
+        isMouseHeld = false;
     }
 }
 
@@ -187,11 +198,10 @@ void GameWindow::render() {
 }
 
 //Constructors
-GameWindow::GameWindow() = default;
 GameWindow::GameWindow(unsigned i, unsigned j, unsigned k) : width(i), height(j) {
     window.create(sf::VideoMode(1080, 720), "Minesweeper", sf::Style::Titlebar | sf::Style::Close);
 
-    //Init game logic
+    //Initialize game logic
     game_data = new GameData(i, j, k);
 }
 
