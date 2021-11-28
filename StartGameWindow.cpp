@@ -2,6 +2,7 @@
 #include <string>
 #include <ctime>
 #include <iostream>
+#include <cmath>
 #include <SFML/Graphics.hpp>
 using namespace std;
 using namespace sf;
@@ -24,33 +25,27 @@ void StartGameWindow()
 
     // back ground texture
     Texture start_game_background_texture;
-    if(!start_game_background_texture.loadFromFile("GameData/Image/start_game_background.jpg"))
-    {
-        cout << "Background image error";
-        return;
-    }
+    start_game_background_texture.loadFromFile("GameData/Image/start_game_background.jpg");
     Sprite start_game_background;
     start_game_background.setTexture(start_game_background_texture);
 
     int total_button = 5;
 
     // button texture
-    Texture button_texture[total_button];
+    vector<Texture> button_texture;
+    button_texture.resize(total_button);
     for(int i = 0; i < total_button; ++i)
     {
         char number = '0' + i;
         string image_path = "GameData/Image/start_game_button";
         image_path += number;
         image_path += ".jpg";
-        if(!button_texture[i].loadFromFile(image_path))
-        {
-            cout << "Button image error";
-            return;
-        }
+        button_texture[i].loadFromFile(image_path);
     }
 
     // button constructor
-    ButtonClass start_game_button[total_button];
+    vector<ButtonClass> start_game_button;
+    start_game_button.resize(total_button);
     for(int i = 0; i < total_button; ++i)
     {
         start_game_button[i] = ButtonClass(Vector2f(200.f, 30.f), Vector2f(200, 270 + i * 50));
