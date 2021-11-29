@@ -20,9 +20,7 @@ public:
         return window.isOpen();
     }
 
-    bool isGameEnded() {
-        return isGameOver;
-    }
+    bool isGameEnded();
 
     //Handle the event polling
     void pollEvent();

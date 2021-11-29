@@ -59,6 +59,13 @@ void GameWindow::loadTexture() {
     t_pack[10].loadFromFile("game_texture/Cell/mine.png");
 }
 
+bool GameWindow::isGameEnded() {
+    if (isGameOver == true || game_data->num_moves == game_data->num_moves_max) {
+        isGameOver = true;
+    }
+    return isGameOver;
+}
+
 //Handle the event polling
 void GameWindow::pollEvent() {
     sf::Event ev;
@@ -213,32 +220,38 @@ void GameWindow::render() {
 
 void GameWindow::saveCurrentGame() {
     std::ofstream output("save_game.txt", std::ofstream::out | std::ofstream::trunc);
-
-    output << time_elapsed.asSeconds() << '\n'
-        << width << ' ' << height << '\n'
-        << (*game_data).num_moves << ' ' << (*game_data).total_mines << '\n';
-
-    for (unsigned i = 0; i < width; ++i) {
-        for (unsigned j = 0; j < height; ++j) {
-            output << (*game_data).calculated[i][j] << ' ';
-        }
-        output << '\n';
+    if (isGameOver) {
+        output << 0;
     }
-    output << '\n';
+    else {
+        output
+            << 1 << '\n'
+            << time_elapsed.asSeconds() << '\n'
+            << width << ' ' << height << '\n'
+            << (*game_data).num_moves << ' ' << (*game_data).total_mines << '\n';
 
-    for (unsigned i = 0; i < width; ++i) {
-        for (unsigned j = 0; j < height; ++j) {
-            output << (*game_data).mine_board[i][j] << ' ';
+        for (unsigned i = 0; i < width; ++i) {
+            for (unsigned j = 0; j < height; ++j) {
+                output << (*game_data).calculated[i][j] << ' ';
+            }
+            output << '\n';
         }
         output << '\n';
-    }
-    output << '\n';
 
-    for (unsigned i = 0; i < width; ++i) {
-        for (unsigned j = 0; j < height; ++j) {
-            output << (*game_data).play_board[i][j] << ' ';
+        for (unsigned i = 0; i < width; ++i) {
+            for (unsigned j = 0; j < height; ++j) {
+                output << (*game_data).mine_board[i][j] << ' ';
+            }
+            output << '\n';
         }
         output << '\n';
+
+        for (unsigned i = 0; i < width; ++i) {
+            for (unsigned j = 0; j < height; ++j) {
+                output << (*game_data).play_board[i][j] << ' ';
+            }
+            output << '\n';
+        }
     }
 
     output.close();

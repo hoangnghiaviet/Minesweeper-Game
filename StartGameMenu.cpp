@@ -26,11 +26,19 @@ void openSelectedWindow(int window_number)
 void LoadGameWindow() {
     std::ifstream input("save_game.txt");
 
+    bool isValidSave;
     float time_elapsed;
     unsigned width, height, num_mines;
     int num_moves;
     std::vector<std::vector<bool>>calculated;
     std::vector<std::vector<char>>mine_board, play_board;
+
+    //If there is not a valid game save, return
+    input >> isValidSave;
+    if (!input) {
+        std::cout << "No valid save";
+        return;
+    }
 
     //Load previous game
     input >> time_elapsed
