@@ -17,6 +17,7 @@ GameData::GameData(int x, int y, int m) : x_dimension(x), y_dimension(y), total_
 	}
 	std::vector<char>mine_pos(x_dimension * y_dimension, false);
 	int num_mines = 0;
+	srand(time(0));
 	while (num_mines < total_mines) {
 		int pos = rand() % (x_dimension * y_dimension);
 		if (mine_pos[pos] == false) {

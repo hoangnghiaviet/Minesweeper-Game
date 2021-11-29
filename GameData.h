@@ -31,4 +31,5 @@ public:
 	}
 	
 	friend class GameWindow;
+	friend void LoadGameWindow();
 };

@@ -1,4 +1,5 @@
 #include "GameWindow.h"
+#include "StartGameWindow.h"
 
 //Initialize the board
 void GameWindow::initBoard() {
@@ -14,11 +15,11 @@ void GameWindow::initBoard() {
     unsigned int startPos_y = 350 - (height * 32) / 2;
 
     //Populate the 2d cells array
-    for (unsigned i = 0; i < width; ++i) {
-        for (unsigned j = 0; j < height; ++j) {
+    for (unsigned i = 0; i < height; ++i) {
+        for (unsigned j = 0; j < width; ++j) {
             sf::RectangleShape cell;
             cell.setSize(sf::Vector2f(cellSize.x, cellSize.y));
-            cell.setPosition(sf::Vector2f(i * cellSize.x + startPos_x, j * cellSize.y + startPos_y));
+            cell.setPosition(sf::Vector2f(j * cellSize.x + startPos_x, i * cellSize.y + startPos_y));
             cell.setTexture(&default_t);
             cells.push_back(cell);
         }
@@ -67,6 +68,13 @@ void GameWindow::pollEvent() {
         case sf::Event::Closed: {
             window.close();
         }
+        case sf::Event::KeyPressed: {
+            if (ev.key.code == sf::Keyboard::Escape) {
+                saveCurrentGame();
+                window.close();
+                StartGameWindow();
+            }
+        }
         }
     }
 }
@@ -92,7 +100,7 @@ void GameWindow::update() {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         for (int i = 0; i < cells.size(); ++i) {
             if (cells[i].getGlobalBounds().contains(mousePosView)) {
-                int y = i % height, x = i / height;
+                int x = i % width, y = i / width;
 
                 isGameOver = (*game_data).open_cell(x, y);
                 updateBoard();
@@ -107,7 +115,7 @@ void GameWindow::update() {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
         for (int i = 0; i < cells.size(); ++i) {
             if (cells[i].getGlobalBounds().contains(mousePosView)) {
-                int y = i % height, x = i / height;
+                int x = i % width, y = i / width;
 
                 int game_state = (*game_data).open_nearby_cells(x, y);
                 switch (game_state) {
@@ -135,7 +143,7 @@ void GameWindow::update() {
 
             for (int i = 0; i < cells.size(); ++i) {
                 if (cells[i].getGlobalBounds().contains(mousePosView)) {
-                    int y = i % height, x = i / height;
+                    int x = i % width, y = i / width;
 
                     (*game_data).set_flag(x, y);
                     updateBoard();
@@ -203,6 +211,39 @@ void GameWindow::render() {
     window.display();
 }
 
+void GameWindow::saveCurrentGame() {
+    std::ofstream output("save_game.txt", std::ofstream::out | std::ofstream::trunc);
+
+    output << time_elapsed.asSeconds() << '\n'
+        << width << ' ' << height << '\n'
+        << (*game_data).num_moves << ' ' << (*game_data).total_mines << '\n';
+
+    for (unsigned i = 0; i < width; ++i) {
+        for (unsigned j = 0; j < height; ++j) {
+            output << (*game_data).calculated[i][j] << ' ';
+        }
+        output << '\n';
+    }
+    output << '\n';
+
+    for (unsigned i = 0; i < width; ++i) {
+        for (unsigned j = 0; j < height; ++j) {
+            output << (*game_data).mine_board[i][j] << ' ';
+        }
+        output << '\n';
+    }
+    output << '\n';
+
+    for (unsigned i = 0; i < width; ++i) {
+        for (unsigned j = 0; j < height; ++j) {
+            output << (*game_data).play_board[i][j] << ' ';
+        }
+        output << '\n';
+    }
+
+    output.close();
+}
+
 //Constructors
 GameWindow::GameWindow(unsigned i, unsigned j, unsigned k) : width(i), height(j) {
     window.create(sf::VideoMode(1080, 720), "Minesweeper", sf::Style::Titlebar | sf::Style::Close);
@@ -222,7 +263,7 @@ void GameWindow::updateBoard() {
         (*game_data).update_play_board();
     }
     for (int i = 0; i < cells.size(); ++i) {
-        int y = i % height, x = i / height;
+        int x = i % width, y = i / width;
         switch ((*game_data).play_board[x][y]) {
         case '0':
             cells[i].setTexture(&t_pack[0]);

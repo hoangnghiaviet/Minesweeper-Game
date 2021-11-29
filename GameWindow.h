@@ -5,6 +5,7 @@
 #include "GameData.h"
 #include <vector>
 #include <string>
+#include <fstream>
 
 class GameWindow {
 public:
@@ -41,12 +42,16 @@ public:
     //Handle the rendering of entities
     void render();
 
+    void saveCurrentGame();
+
     //Constructors
     GameWindow() = default;
     GameWindow(unsigned, unsigned, unsigned);
 
     //Destructors
     ~GameWindow();
+
+    friend void LoadGameWindow();
 
 private:
     //Update the board whenever a move is made
