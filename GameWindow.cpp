@@ -8,11 +8,11 @@ void GameWindow::initBoard() {
     default_t.loadFromFile("game_texture/Cell/default.png");
 
     //Load font
-    font.loadFromFile("game_texture/Font/VNARIAL.ttf");
+    font.loadFromFile("game_texture/Font/AppleII.ttf");
 
     sf::Vector2f cellSize = sf::Vector2f(32.f, 32.f);
-    unsigned int startPos_x = 540 - (width * 32) / 2;
-    unsigned int startPos_y = 350 - (height * 32) / 2;
+    float startPos_x = static_cast<float>(540 - (width * 32) / 2);
+    float startPos_y = static_cast<float>(360 - (height * 32) / 2);
 
     //Populate the 2d cells array
     for (unsigned i = 0; i < height; ++i) {
@@ -33,14 +33,20 @@ void GameWindow::initBoard() {
     clock.setFont(font);
     clock.setCharacterSize(24);
     clock.setFillColor(sf::Color::Black);
-    clock.setPosition(startPos_x, startPos_y - 60);
+    clock.setPosition(sf::Vector2f(startPos_x, startPos_y + height * cellSize.y));
 
     //Set up the score
     score.setFont(font);
     score.setCharacterSize(24);
     score.setFillColor(sf::Color::Black);
     score.setString("Score: 0");
-    score.setPosition(startPos_x, startPos_y - 30);
+    score.setPosition(sf::Vector2f(startPos_x, startPos_y + height * cellSize.y + 30));
+
+    //Set up the game ending message
+    end_message.setFont(font);
+    end_message.setCharacterSize(24);
+    end_message.setFillColor(sf::Color::Black);
+    end_message.setPosition(sf::Vector2f(startPos_x, startPos_y - 35));
 }
 
 //Load the texture for each type of cell
@@ -60,10 +66,7 @@ void GameWindow::loadTexture() {
 }
 
 bool GameWindow::isGameEnded() {
-    if (isGameOver == true || game_data->num_moves == game_data->num_moves_max) {
-        isGameOver = true;
-    }
-    return isGameOver;
+    return isGameLost || isGameWon;
 }
 
 //Handle the event polling
@@ -88,7 +91,6 @@ void GameWindow::pollEvent() {
 
 //Update whenever there is a mouse click on a cell
 void GameWindow::update() {
-
     //Get the mouse coordinates
     sf::Vector2i mousePosWindow = sf::Mouse::getPosition(window);
     sf::Vector2f mousePosView = window.mapPixelToCoords(mousePosWindow);
@@ -109,10 +111,10 @@ void GameWindow::update() {
             if (cells[i].getGlobalBounds().contains(mousePosView)) {
                 int x = i % width, y = i / width;
 
-                isGameOver = (*game_data).open_cell(x, y);
+                isGameLost = (*game_data).open_cell(x, y);
                 updateBoard();
 
-                new_num_moves = (*game_data).return_num_moves();
+                int new_num_moves = (*game_data).return_num_moves();
                 updateScore(new_num_moves);
             }
         }
@@ -124,10 +126,10 @@ void GameWindow::update() {
             if (cells[i].getGlobalBounds().contains(mousePosView)) {
                 int x = i % width, y = i / width;
 
-                int game_state = (*game_data).open_nearby_cells(x, y);
+                int game_state = (*game_data).open_nearby_cells(x, y), new_num_moves;
                 switch (game_state) {
                 case 1:
-                    isGameOver = true;
+                    isGameLost = true;
                     updateBoard();
                     break;
                 case 0:
@@ -161,11 +163,27 @@ void GameWindow::update() {
     else {
         isMouseHeld = false;
     }
+
+    //If game is won, merge the play_board and mine_board
+    if (game_data->num_moves == game_data->num_moves_max) {
+        isGameWon = true;
+        updateBoard();
+    }
+
+    //If game is ended, print out the game ending message
+    if (this->isGameEnded()) {
+        if (isGameWon) {
+            end_message.setString("You win!");
+        }
+        else {
+            end_message.setString("You lose!");
+        }
+    }
 }
 
 //Update the clock
 void GameWindow::updateClock(sf::Time new_time_elapsed) {
-    time_elapsed = new_time_elapsed;
+    time_elapsed = new_time_elapsed + prev_time_elapsed;
     clock_text = convertToString(time_elapsed.asSeconds());
     clock.setString(clock_text);
 }
@@ -202,6 +220,12 @@ void GameWindow::updateScore(int new_num_moves) {
     }
 }
 
+void GameWindow::loadSavedScore(int saved_score) {
+    current_score = saved_score;
+    std::string score_text = "Score: " + std::to_string(current_score);
+    score.setString(score_text);
+}
+
 //Handle the rendering of entities
 void GameWindow::render() {
     window.clear();
@@ -215,18 +239,22 @@ void GameWindow::render() {
         window.draw(cell);
     }
 
+    if (this->isGameEnded()) {
+        window.draw(end_message);
+    }
+
     window.display();
 }
 
 void GameWindow::saveCurrentGame() {
     std::ofstream output("save_game.txt", std::ofstream::out | std::ofstream::trunc);
-    if (isGameOver) {
+    if (this->isGameEnded()) {
         output << 0;
     }
     else {
         output
             << 1 << '\n'
-            << time_elapsed.asSeconds() << '\n'
+            << time_elapsed.asSeconds() << ' ' << current_score << '\n'
             << width << ' ' << height << '\n'
             << (*game_data).num_moves << ' ' << (*game_data).total_mines << '\n';
 
@@ -272,7 +300,7 @@ GameWindow::~GameWindow() {
 
 //Update the board whenever a move is made
 void GameWindow::updateBoard() {
-    if (isGameOver) {
+    if (isGameLost || isGameWon) {
         (*game_data).update_play_board();
     }
     for (int i = 0; i < cells.size(); ++i) {

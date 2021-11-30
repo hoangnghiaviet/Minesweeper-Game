@@ -37,6 +37,8 @@ public:
     //Update the score based on time elapsed
     void updateScore(int);
 
+    void loadSavedScore(int);
+
     //Handle the rendering of entities
     void render();
 
@@ -75,12 +77,15 @@ private:
     sf::Text clock;
     std::string clock_text = "0:0:0";
     sf::Time time_elapsed = sf::seconds(0.f);
+    sf::Time prev_time_elapsed = sf::seconds(0.f);
 
     //Score
     sf::Text score;
     int current_score = 0;
     int current_num_moves = 0;
-    int new_num_moves = 0;
+
+    //Game ending message
+    sf::Text end_message;
 
     //Input delay
     bool isMouseHeld = false;
@@ -88,6 +93,8 @@ private:
     //Game logic
     unsigned width, height;
     GameData* game_data;
-    bool isGameOver = false;
+    bool isGameLost = false;
+    bool isGameWon = false;
+
 };
 
