@@ -76,6 +76,7 @@ void GameWindow::pollEvent() {
         switch (ev.type) {
 
         case sf::Event::Closed: {
+            saveCurrentGame();
             window.close();
         }
         case sf::Event::KeyPressed: {
