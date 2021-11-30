@@ -164,10 +164,12 @@ void GameWindow::update() {
         isMouseHeld = false;
     }
 
-    //If game is won, merge the play_board and mine_board
+    //If game is won, merge the play_board and mine_board, print the winning message and save the score
     if (game_data->num_moves == game_data->num_moves_max) {
         isGameWon = true;
         updateBoard();
+
+        saveCurrentScore();
     }
 
     //If game is ended, print out the game ending message
@@ -218,6 +220,32 @@ void GameWindow::updateScore(int new_num_moves) {
 
         current_num_moves = new_num_moves;
     }
+}
+
+void GameWindow::saveCurrentScore() {
+    std::ifstream input("high_scores.txt");
+
+    std::vector<int>scores;
+    for (int i = 0; i < 5; ++i) {
+        int tmp; input >> tmp;
+        scores.push_back(tmp);
+    }
+    scores.push_back(current_score);
+
+    //Sort in descending order
+    sort(scores.begin(), scores.end(), std::greater<int>());
+
+    input.close();
+
+    std::ofstream output("high_scores.txt", std::ofstream::out | std::ofstream::trunc);
+
+    //Only print out 5 highest scores
+    for (int i = 0; i < 5; ++i) {
+        output << scores[i] << '\n';
+    }
+
+    output.close();
+
 }
 
 void GameWindow::loadSavedScore(int saved_score) {

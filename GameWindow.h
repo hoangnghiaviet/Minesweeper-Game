@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <algorithm>
+#include <functional>
 
 class GameWindow {
 public:
@@ -36,6 +38,8 @@ public:
 
     //Update the score based on time elapsed
     void updateScore(int);
+
+    void saveCurrentScore();
 
     void loadSavedScore(int);
 
