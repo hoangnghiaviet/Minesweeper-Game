@@ -105,23 +105,8 @@ void GameWindow::update() {
         }
     }
 
-    //Left mouse button -> Open cell
+    //Left mouse button -> Open a cell or open nearby cells
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        for (int i = 0; i < cells.size(); ++i) {
-            if (cells[i].getGlobalBounds().contains(mousePosView)) {
-                int x = i % width, y = i / width;
-
-                isGameLost = (*game_data).open_cell(x, y);
-                updateBoard();
-
-                int new_num_moves = (*game_data).return_num_moves();
-                updateScore(new_num_moves);
-            }
-        }
-    }
-
-    //Middle mouse button -> Open nearby cells
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
         for (int i = 0; i < cells.size(); ++i) {
             if (cells[i].getGlobalBounds().contains(mousePosView)) {
                 int x = i % width, y = i / width;
@@ -138,6 +123,13 @@ void GameWindow::update() {
                     updateScore(new_num_moves);
                     break;
                 case -1:
+                    //Open a cell
+                    isGameLost = (*game_data).open_cell(x, y);
+                    updateBoard();
+
+                    int new_num_moves = (*game_data).return_num_moves();
+                    updateScore(new_num_moves);
+
                     break;
                 }
             }
