@@ -1,13 +1,27 @@
 #pragma once
+#include <vector>
+#include <string>
+#include <ctime>
+#include <fstream>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+using namespace std;
+using namespace sf;
 
-void move_to_start_game_menu(int window_number);
+#include "GameWindow.h"
+#include "StartGameWindow.h"
+#include "InGameWindow.h"
+#include "ButtonClass.h"
+#include "MouseEvent.h"
+
+void openSelectedWindow(int window_number);
 
 void LoadGameWindow();
 
 void NewGameWindow();
 
-void LeaderBoardWindow();
+//void LeaderBoardWindow();
 
 void InstructionWindow();
 
-void AuthorWindow();
+//void AuthorWindow();

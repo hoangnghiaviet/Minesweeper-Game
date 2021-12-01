@@ -25,7 +25,7 @@ void StartGameWindow()
 
     // back ground texture
     Texture start_game_background_texture;
-    start_game_background_texture.loadFromFile("GameData/Image/start_game_background.png");
+    start_game_background_texture.loadFromFile("Game_Texture/Image/start_game_background.png");
     Sprite start_game_background;
     start_game_background.setTexture(start_game_background_texture);
 
@@ -37,7 +37,7 @@ void StartGameWindow()
     for(int i = 0; i < total_button; ++i)
     {
         char number = '0' + i;
-        string image_path = "GameData/Image/start_game_button";
+        string image_path = "Game_Texture/Image/start_game_button";
         image_path += number;
         image_path += ".jpg";
         button_texture[i].loadFromFile(image_path);
@@ -48,8 +48,7 @@ void StartGameWindow()
     start_game_button.resize(total_button);
     for(int i = 0; i < total_button; ++i)
     {
-        start_game_button[i] = ButtonClass(Vector2f(240.f, 30.f), Vector2f(280, 270 + i * 60));
-        start_game_button[i].button.setTexture(&button_texture[i]);
+        start_game_button[i] = ButtonClass(Vector2f(240.f, 30.f), Vector2f(280, 270 + i * 60), button_texture[i]);
     }
 
     // display window
@@ -68,7 +67,7 @@ void StartGameWindow()
         if(clicked_button != -1)
         {
             start_game_window.close();
-            move_to_start_game_menu(clicked_button);
+            openSelectedWindow(clicked_button);
         }
 
         start_game_window.clear(Color::White);
