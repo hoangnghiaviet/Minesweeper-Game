@@ -78,6 +78,7 @@ void GameWindow::pollEvent() {
         case sf::Event::Closed: {
             saveCurrentGame();
             window.close();
+            StartGameWindow();
         }
         case sf::Event::KeyPressed: {
             if (ev.key.code == sf::Keyboard::Escape) {

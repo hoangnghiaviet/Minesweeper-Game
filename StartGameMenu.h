@@ -11,8 +11,10 @@ void LoadGameWindow();
 
 void NewGameWindow();
 
+void InGameWindow(unsigned, unsigned, unsigned);
+
 //void LeaderBoardWindow();
 
-//void InstructionWindow();
+void InstructionWindow();
 
 //void AuthorWindow();

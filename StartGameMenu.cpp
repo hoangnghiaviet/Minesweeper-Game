@@ -16,7 +16,7 @@ void openSelectedWindow(int window_number)
         // LeaderBoardWindow();
         break;
     case 3:
-        // InstructionWindow();
+        InstructionWindow();
         break;
     case 4:
         // AuthorWindow();
@@ -64,6 +64,7 @@ void LoadGameWindow() {
 
                 case sf::Event::Closed: {
                     window.close();
+                    StartGameWindow();
                 }
                 case sf::Event::KeyPressed: {
                     if (ev.key.code == sf::Keyboard::Escape) {
@@ -162,8 +163,82 @@ void LoadGameWindow() {
 
 void NewGameWindow()
 {
-    //NewGameWindow should give the player the options to change the below values
-    unsigned width = 5, height = 5, num_mines = 5;
+    sf::RenderWindow new_game_window(sf::VideoMode(800, 600), "MineSweeper", sf::Style::Close);
+
+    // background
+    sf::Texture new_game_background_texture;
+    new_game_background_texture.loadFromFile("Game_Texture/Image/start_game_background.png");
+    sf::Sprite new_game_background;
+    new_game_background.setTexture(new_game_background_texture);
+
+    int total_new_game_button = 3;
+
+    std::vector<sf::Texture> new_game_button_texture;
+    new_game_button_texture.resize(total_new_game_button);
+    for (int i = 0; i < total_new_game_button; ++i)
+    {
+        char number = '0' + i;
+        std::string image_path = "Game_Texture/Image/NewGameWindow/new_game_button";
+        image_path += number;
+        image_path += ".jpg";
+        new_game_button_texture[i].loadFromFile(image_path);
+    }
+
+    std::vector<ButtonClass> new_game_button;
+    new_game_button.resize(total_new_game_button);
+    for (int i = 0; i < total_new_game_button; ++i)
+    {
+        new_game_button[i] = ButtonClass(sf::Vector2f(240.f, 30.f), sf::Vector2f(280, 270 + i * 60), new_game_button_texture[i]);
+    }
+
+    while (new_game_window.isOpen())
+    {
+        sf::Event event;
+        while (new_game_window.pollEvent(event))
+        {
+            switch (event.type) {
+            case sf::Event::Closed: {
+                new_game_window.close();
+                StartGameWindow();
+            }
+            case sf::Event::KeyPressed: {
+                if (event.key.code == sf::Keyboard::Escape) {
+                    new_game_window.close();
+                    StartGameWindow();
+                }
+            }
+            }
+        }
+
+        int clicked_button = get_button_clicked(new_game_button, total_new_game_button, new_game_window);
+        if (clicked_button != -1)
+        {
+            new_game_window.close();
+            switch (clicked_button)
+            {
+            case 0:
+                InGameWindow(9, 9, 10);
+                break;
+            case 1:
+                InGameWindow(16, 16, 40);
+                break;
+            case 2:
+                InGameWindow(30, 16, 99);
+                break;
+            }
+        }
+
+        new_game_window.clear(sf::Color::White);
+        new_game_window.draw(new_game_background);
+        for (int i = 0; i < total_new_game_button; ++i)
+        {
+            new_game_window.draw(new_game_button[i].button);
+        }
+        new_game_window.display();
+    }
+}
+
+void InGameWindow(unsigned width, unsigned height, unsigned num_mines) {
 
     GameWindow board(width, height, num_mines);
     board.initBoard();
@@ -192,6 +267,99 @@ void NewGameWindow()
 
 //void LeaderBoardWindow();
 
-//void InstructionWindow();
+void InstructionWindow()
+{
+    sf::RenderWindow instruction_window(sf::VideoMode(800, 600), "MineSweeper", sf::Style::Close);
+
+    int current_page = 0, total_page = 3;
+
+    std::vector<sf::Texture> instruction_page_texture;
+    instruction_page_texture.resize(total_page);
+    for (int i = 0; i < total_page; ++i)
+    {
+        char number = '0' + i;
+        std::string image_path = "Game_Texture/Image/InstructionWindow/instruction_page";
+        image_path += number;
+        image_path += ".png";
+        instruction_page_texture[i].loadFromFile(image_path);
+    }
+
+    std::vector<sf::Sprite> instruction_page;;
+    instruction_page.resize(total_page);
+    for (int i = 0; i < total_page; ++i)
+    {
+        instruction_page[i].setTexture(instruction_page_texture[i]);
+    }
+
+    sf::CircleShape previous_button(12.f, 3);
+    sf::CircleShape next_button(12.f, 3);
+
+    previous_button.setFillColor(sf::Color::White);
+    next_button.setFillColor(sf::Color::White);
+
+    previous_button.setOutlineThickness(1.f);
+    previous_button.setOutlineColor(sf::Color::Black);
+    next_button.setOutlineThickness(1.f);
+    next_button.setOutlineColor(sf::Color::Black);
+
+    previous_button.setPosition(sf::Vector2f(85, 567));
+    next_button.setPosition(sf::Vector2f(715, 543));
+
+    previous_button.rotate(-90.f);
+    next_button.rotate(90.f);
+
+    while (instruction_window.isOpen())
+    {
+        sf::Event event;
+        while (instruction_window.pollEvent(event))
+        {
+            switch (event.type) {
+            case sf::Event::Closed: {
+                instruction_window.close();
+                StartGameWindow();
+            }
+            case sf::Event::KeyPressed: {
+                if (event.key.code == sf::Keyboard::Escape) {
+                    instruction_window.close();
+                    StartGameWindow();
+                }
+            }
+            }
+        }
+
+        std::string click = get_mouse_clicked();
+        sf::Vector2i mouse_position = sf::Mouse::getPosition(instruction_window);
+        if (check_mouse_clicked(mouse_position, sf::Vector2f(85, 546.3), sf::Vector2f(18, 20.7)))
+        {
+            previous_button.setFillColor(sf::Color::Red);
+            if (click == "left")
+            {
+                current_page = (current_page - 1 + total_page) % total_page;
+            }
+        }
+        else
+        {
+            previous_button.setFillColor(sf::Color::White);
+        }
+        if (check_mouse_clicked(mouse_position, sf::Vector2f(697, 543), sf::Vector2f(18, 20.7)))
+        {
+            next_button.setFillColor(sf::Color::Red);
+            if (click == "left")
+            {
+                current_page = (current_page + 1) % total_page;
+            }
+        }
+        else
+        {
+            next_button.setFillColor(sf::Color::White);
+        }
+
+        instruction_window.clear(sf::Color::White);
+        instruction_window.draw(instruction_page[current_page]);
+        instruction_window.draw(previous_button);
+        instruction_window.draw(next_button);
+        instruction_window.display();
+    }
+}
 
 //void AuthorWindow();
