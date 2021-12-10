@@ -48,6 +48,7 @@ void StartGameWindow()
             if (event.type == sf::Event::Closed)
             {
                 start_game_window.close();
+                exit(0);
             }
         }
 
