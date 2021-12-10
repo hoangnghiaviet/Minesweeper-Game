@@ -23,13 +23,13 @@ public:
 	bool open_cell(int x, int y);
 	int open_nearby_cells(int x, int y);
 	void set_flag(int x, int y);
-	
+
 	void update_play_board();
 
 	int return_num_moves() {
 		return num_moves;
 	}
-	
+
 	friend class GameWindow;
-	friend void LoadGameWindow();
+	friend void LoadGameWindow(unsigned, unsigned, unsigned, bool);
 };
