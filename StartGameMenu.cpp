@@ -7,25 +7,24 @@ void openSelectedWindow(int window_number)
     switch (window_number)
     {
     case 0:
-        LoadGameWindow();
+        LoadGameWindow(1, 1, 1, 1);
         break;
     case 1:
         NewGameWindow();
         break;
     case 2:
-        // LeaderBoardWindow();
+        LeaderBoardWindow();
         break;
     case 3:
         InstructionWindow();
         break;
     case 4:
-        // AuthorWindow();
+        AuthorWindow();
         break;
     }
 }
 
-void LoadGameWindow() {
-    std::ifstream input("save_game.txt");
+void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool isLoadGame) {
 
     bool isValidSave;
     float time_elapsed;
@@ -34,107 +33,119 @@ void LoadGameWindow() {
     std::vector<std::vector<bool>>calculated;
     std::vector<std::vector<char>>mine_board, play_board;
 
-    input >> isValidSave;
+    if(isLoadGame == true)
+    {
+        std::ifstream input("save_game.txt");
+        input >> isValidSave;
 
-    //If there is not a valid game save, direct the player back to StartGameWindow()
-    if (!isValidSave) {
-        sf::RenderWindow window(sf::VideoMode(1080, 720), "MineSweeper", sf::Style::Titlebar | sf::Style::Close);
+        //If there is not a valid game save, direct the player back to StartGameWindow()
+        if (!isValidSave) {
+            sf::RenderWindow window(sf::VideoMode(1080, 720), "MineSweeper", sf::Style::Titlebar | sf::Style::Close);
 
-        sf::Texture background_t;
-        background_t.loadFromFile("game_texture/Image/background.jpg");
+            sf::Texture background_t;
+            background_t.loadFromFile("game_texture/Image/background.jpg");
 
-        sf::Sprite background;
-        background.setTexture(background_t);
+            sf::Sprite background;
+            background.setTexture(background_t);
 
-        sf::Font font;
-        font.loadFromFile("game_texture/Font/AppleII.ttf");
+            sf::Font font;
+            font.loadFromFile("game_texture/Font/AppleII.ttf");
 
-        sf::Text message;
-        message.setFont(font);
-        message.setCharacterSize(24);
-        message.setFillColor(sf::Color::Black);
-        //Put the message in the center
-        message.setPosition(sf::Vector2f(540.f - 360.f, 360 - 30.f));
-        message.setString("No game saves are found! Press Esc to return to menu.");
+            sf::Text message;
+            message.setFont(font);
+            message.setCharacterSize(24);
+            message.setFillColor(sf::Color::Black);
+            //Put the message in the center
+            message.setPosition(sf::Vector2f(540.f - 360.f, 360 - 30.f));
+            message.setString("No game saves are found! Press Esc to return to menu.");
 
-        while (window.isOpen()) {
-            sf::Event ev;
-            while (window.pollEvent(ev)) {
-                switch (ev.type) {
+            while (window.isOpen()) {
+                sf::Event ev;
+                while (window.pollEvent(ev)) {
+                    switch (ev.type) {
 
-                case sf::Event::Closed: {
-                    window.close();
-                    StartGameWindow();
-                }
-                case sf::Event::KeyPressed: {
-                    if (ev.key.code == sf::Keyboard::Escape) {
+                    case sf::Event::Closed: {
                         window.close();
                         StartGameWindow();
                     }
+                    case sf::Event::KeyPressed: {
+                        if (ev.key.code == sf::Keyboard::Escape) {
+                            window.close();
+                            StartGameWindow();
+                        }
+                    }
+                    }
                 }
-                }
+
+                window.clear(sf::Color::Black);
+
+                window.draw(background);
+                window.draw(message);
+
+                window.display();
             }
 
-            window.clear(sf::Color::Black);
-
-            window.draw(background);
-            window.draw(message);
-
-            window.display();
+            return;
         }
 
-        return;
-    }
+        //Load previous game
+        input >> time_elapsed >> score
+            >> width >> height
+            >> num_moves >> num_mines;
 
-    //Load previous game
-    input >> time_elapsed >> score
-        >> width >> height
-        >> num_moves >> num_mines;
-
-    for (unsigned i = 0; i < width; ++i) {
-        std::vector<bool>col;
-        for (unsigned j = 0; j < height; ++j) {
-            bool tmp; input >> tmp;
-            col.push_back(tmp);
+        for (unsigned i = 0; i < width; ++i) {
+            std::vector<bool>col;
+            for (unsigned j = 0; j < height; ++j) {
+                bool tmp; input >> tmp;
+                col.push_back(tmp);
+            }
+            calculated.push_back(col);
         }
-        calculated.push_back(col);
-    }
-    for (unsigned i = 0; i < width; ++i) {
-        std::vector<char>col;
-        for (unsigned j = 0; j < height; ++j) {
-            char tmp; input >> tmp;
-            col.push_back(tmp);
+        for (unsigned i = 0; i < width; ++i) {
+            std::vector<char>col;
+            for (unsigned j = 0; j < height; ++j) {
+                char tmp; input >> tmp;
+                col.push_back(tmp);
+            }
+            mine_board.push_back(col);
         }
-        mine_board.push_back(col);
-    }
-    for (unsigned i = 0; i < width; ++i) {
-        std::vector<char>col;
-        for (unsigned j = 0; j < height; ++j) {
-            char tmp; input >> tmp;
-            col.push_back(tmp);
+        for (unsigned i = 0; i < width; ++i) {
+            std::vector<char>col;
+            for (unsigned j = 0; j < height; ++j) {
+                char tmp; input >> tmp;
+                col.push_back(tmp);
+            }
+            play_board.push_back(col);
         }
-        play_board.push_back(col);
+        input.close();
     }
-
-    input.close();
+    else
+    {
+        width = _width;
+        height = _height;
+        num_mines = _num_mines;
+    }
 
     GameWindow board(width, height, num_mines);
     board.initBoard();
     board.loadTexture();
 
-    //Set up the saved time elapsed
-    board.prev_time_elapsed = sf::seconds(time_elapsed);
+    if(isLoadGame == true)
+    {
+        //Set up the saved time elapsed
+        board.prev_time_elapsed = sf::seconds(time_elapsed);
 
-    //Set up the saved score
-    board.loadSavedScore(score);
-    board.current_num_moves = num_moves;
+        //Set up the saved score
+        board.loadSavedScore(score);
+        board.current_num_moves = num_moves;
 
-    //Set up the saved game data
-    board.game_data->num_moves = num_moves;
-    board.game_data->calculated = calculated;
-    board.game_data->mine_board = mine_board;
-    board.game_data->play_board = play_board;
-    board.updateBoard();
+        //Set up the saved game data
+        board.game_data->num_moves = num_moves;
+        board.game_data->calculated = calculated;
+        board.game_data->mine_board = mine_board;
+        board.game_data->play_board = play_board;
+        board.updateBoard();
+    }
 
     sf::Clock clock;
 
@@ -154,6 +165,12 @@ void LoadGameWindow() {
         else {
             //Delete the data for games that have been won or lost
             board.saveCurrentGame();
+
+            board.isReplayButton = true;
+            if(board.isReplay()) {
+                LoadGameWindow(width, height, num_mines, 0);
+                return;
+            }
         }
 
         //Draw the board
@@ -217,13 +234,13 @@ void NewGameWindow()
             switch (clicked_button)
             {
             case 0:
-                InGameWindow(9, 9, 10);
+                LoadGameWindow(9, 9, 10, 0);
                 break;
             case 1:
-                InGameWindow(16, 16, 40);
+                LoadGameWindow(16, 16, 40, 0);
                 break;
             case 2:
-                InGameWindow(30, 16, 99);
+                LoadGameWindow(30, 16, 99, 0);
                 break;
             }
         }
@@ -238,34 +255,118 @@ void NewGameWindow()
     }
 }
 
-void InGameWindow(unsigned width, unsigned height, unsigned num_mines) {
+void LeaderBoardWindow()
+{
+    sf::RenderWindow leader_board_window(sf::VideoMode(800, 600), "MineSweeper", sf::Style::Close);
 
-    GameWindow board(width, height, num_mines);
-    board.initBoard();
-    board.loadTexture();
+    sf::Texture leader_board_background_texture;
+    leader_board_background_texture.loadFromFile("Game_Texture/Image/start_game_background.png");
+    sf::Sprite leader_board_background;
+    leader_board_background.setTexture(leader_board_background_texture);
 
-    sf::Clock clock;
+    int total_score = 10;
+    sf::Font font;
+    font.loadFromFile("Game_Texture/Font/AppleII.ttf");
+    std::vector<sf::RectangleShape> rank_sprite(total_score);
+    std::vector<sf::RectangleShape> score_sprite(total_score);
+    std::vector<sf::Text> rank_text(total_score);
+    std::vector<sf::Text> score_text(total_score);
+    std::ifstream input("high_scores.txt");
+    for(int i = 0; i < total_score; ++i)
+    {
+        int x_coord = (i < 5) ? 80 : 480;
+        int y_coord = 30 * (9 + (i % 5) * 2);
+        rank_sprite[i].setSize(sf::Vector2f(40, 30));
+        rank_sprite[i].setPosition(sf::Vector2f(x_coord, y_coord));
+        rank_sprite[i].setFillColor(sf::Color::White);
 
-    //Run the main loop
-    while (board.isWindowOpen()) {
+        score_sprite[i].setSize(sf::Vector2f(160, 30));
+        score_sprite[i].setPosition(sf::Vector2f(x_coord + 80, y_coord));
+        score_sprite[i].setFillColor(sf::Color::White);
 
-        //Handle events
-        board.pollEvent();
+        rank_text[i].setFont(font);
+        rank_text[i].setCharacterSize(20);
+        rank_text[i].setPosition(sf::Vector2f(x_coord, y_coord));
+        rank_text[i].setFillColor(sf::Color::Black);
+        std::string rank_string = "#";
+        if(i < 9) rank_string += char('1' + i);
+        else rank_string += "10";
+        rank_text[i].setString(rank_string);
 
-        //Update the board
-        if (!board.isGameEnded()) {
-            board.update();
+        score_text[i].setFont(font);
+        score_text[i].setCharacterSize(20);
+        score_text[i].setPosition(sf::Vector2f(x_coord + 80, y_coord));
+        score_text[i].setFillColor(sf::Color::Black);
+        std::string score_string;
+        input >> score_string;
+        score_text[i].setString(score_string);
+    }
+    input.close();
 
-            sf::Time time_elapsed = clock.getElapsedTime();
-            board.updateClock(time_elapsed);
+    sf::Texture reset_button_texture;
+    reset_button_texture.loadFromFile("Game_Texture/Image/reset_button.jpg");
+    ButtonClass reset_button;
+    reset_button = ButtonClass(sf::Vector2f(80, 30), sf::Vector2f(360, 540), reset_button_texture);
+
+    while(leader_board_window.isOpen())
+    {
+        sf::Event event;
+        while(leader_board_window.pollEvent(event))
+        {
+            switch (event.type) {
+            case sf::Event::Closed: {
+                leader_board_window.close();
+                StartGameWindow();
+            }
+            case sf::Event::KeyPressed: {
+                if (event.key.code == sf::Keyboard::Escape) {
+                    leader_board_window.close();
+                    StartGameWindow();
+                }
+            }
+            }
         }
 
-        //Draw the board
-        board.render();
+        std::string mouse_click = get_mouse_clicked();
+        if(check_mouse_clicked(sf::Mouse::getPosition(leader_board_window), reset_button.button.getPosition(), reset_button.button.getSize()))
+        {
+            reset_button.button.setFillColor(sf::Color::Red);
+            if(mouse_click == "left")
+            {
+                std::ofstream output("high_scores.txt", std::ofstream::out | std::ofstream::trunc);
+                for(int i = 0; i < total_score; ++i)
+                {
+                    output << 0 << '\n';
+                }
+                output.close();
+                std::ifstream input("high_scores.txt");
+                for(int i = 0; i < total_score; ++i)
+                {
+                    std::string score_string;
+                    input >> score_string;
+                    score_text[i].setString(score_string);
+                }
+                input.close();
+            }
+        }
+        else
+        {
+            reset_button.button.setFillColor(sf::Color::White);
+        }
+
+        leader_board_window.clear(sf::Color::White);
+        leader_board_window.draw(leader_board_background);
+        for(int i = 0 ; i < total_score; ++i)
+        {
+            leader_board_window.draw(rank_sprite[i]);
+            leader_board_window.draw(score_sprite[i]);
+            leader_board_window.draw(rank_text[i]);
+            leader_board_window.draw(score_text[i]);
+        }
+        leader_board_window.draw(reset_button.button);
+        leader_board_window.display();
     }
 }
-
-//void LeaderBoardWindow();
 
 void InstructionWindow()
 {
@@ -362,4 +463,36 @@ void InstructionWindow()
     }
 }
 
-//void AuthorWindow();
+void AuthorWindow()
+{
+    sf::RenderWindow author_window(sf::VideoMode(800, 600), "MineSweeper", sf::Style::Close);
+
+    sf::Texture author_background_texture;
+    author_background_texture.loadFromFile("Game_Texture/Image/start_game_background.png");
+    sf::Sprite author_background;
+    author_background.setTexture(author_background_texture);
+
+    while (author_window.isOpen())
+    {
+        sf::Event event;
+        while (author_window.pollEvent(event))
+        {
+            switch (event.type) {
+            case sf::Event::Closed: {
+                author_window.close();
+                StartGameWindow();
+            }
+            case sf::Event::KeyPressed: {
+                if (event.key.code == sf::Keyboard::Escape) {
+                    author_window.close();
+                    StartGameWindow();
+                }
+            }
+            }
+        }
+
+        author_window.clear(sf::Color::White);
+        author_window.draw(author_background);
+        author_window.display();
+    }
+}
