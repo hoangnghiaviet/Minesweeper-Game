@@ -36,15 +36,7 @@ public:
     //Update the clock
     void updateClock(sf::Time);
 
-    //Convert the elapsed time in float to a HH:MM:SS string
-    std::string convertToString(float);
-
-    //Update the score based on time elapsed
-    void updateScore(int);
-
     void saveCurrentScore();
-
-    void loadSavedScore(int);
 
     //Handle the rendering of entities
     void render();
@@ -86,11 +78,6 @@ private:
     sf::Time time_elapsed = sf::seconds(0.f);
     sf::Time prev_time_elapsed = sf::seconds(0.f);
 
-    //Score
-    sf::Text score;
-    int current_score = 0;
-    int current_num_moves = 0;
-
     //Game ending message
     sf::Text end_message;
 
@@ -109,3 +96,6 @@ private:
     sf::RectangleShape replay_button;
 };
 
+// Convert a time value in float to a HH:MM:SS string
+// --------------------------------------------------
+std::string convertToString(float);

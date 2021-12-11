@@ -1,5 +1,6 @@
 #include "StartGameMenu.h"
 #include "StartGameWindow.h"
+#include "GameWindow.h"
 
 // Function will open the window with corresponding window_number
 void openSelectedWindow(int window_number)
@@ -89,7 +90,7 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
         }
 
         //Load previous game
-        input >> time_elapsed >> score
+        input >> time_elapsed
             >> width >> height
             >> num_moves >> num_mines;
 
@@ -134,10 +135,6 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
     {
         //Set up the saved time elapsed
         board.prev_time_elapsed = sf::seconds(time_elapsed);
-
-        //Set up the saved score
-        board.loadSavedScore(score);
-        board.current_num_moves = num_moves;
 
         //Set up the saved game data
         board.game_data->num_moves = num_moves;
@@ -264,49 +261,90 @@ void LeaderBoardWindow()
     sf::Sprite leader_board_background;
     leader_board_background.setTexture(leader_board_background_texture);
 
-    int total_score = 10;
     sf::Font font;
     font.loadFromFile("Game_Texture/Font/AppleII.ttf");
-    std::vector<sf::RectangleShape> rank_sprite(total_score);
+
+    // Set up the text indicating levels of difficulty
+    // -----------------------------------------------
+    std::vector<sf::RectangleShape> levels(3);
+    std::vector<sf::Text> levels_text(3);
+
+    for (int i = 0; i < 3; ++i) {
+        float x_coord = 80.f + i * (240.f), y_coord = 270.f;
+
+        // Set up the boxes
+        levels[i].setSize(sf::Vector2f(160, 30));
+        levels[i].setPosition(sf::Vector2f(x_coord, y_coord));
+        levels[i].setFillColor(sf::Color::White);
+
+        // Set up the text
+        levels_text[i].setFont(font);
+        levels_text[i].setCharacterSize(20);
+        levels_text[i].setFillColor(sf::Color::Black);
+
+        if (i == 0) {
+            levels_text[i].setString("Beginner");
+            levels_text[i].setPosition(sf::Vector2f(x_coord + 30, y_coord));
+        }
+        if (i == 1) {
+            levels_text[i].setString("Intermediate");
+            levels_text[i].setPosition(sf::Vector2f(x_coord, y_coord));
+        }
+        if (i == 2) {
+            levels_text[i].setString("Expert");
+            levels_text[i].setPosition(sf::Vector2f(x_coord + 42, y_coord));
+        }
+    }
+
+    // Set up the scores
+    // -----------------
+    int total_score = 12;
     std::vector<sf::RectangleShape> score_sprite(total_score);
-    std::vector<sf::Text> rank_text(total_score);
     std::vector<sf::Text> score_text(total_score);
     std::ifstream input("high_scores.txt");
-    for(int i = 0; i < total_score; ++i)
+    for(int i = 0; i < 12; ++i)
     {
-        int x_coord = (i < 5) ? 80 : 480;
-        int y_coord = 30 * (9 + (i % 5) * 2);
-        rank_sprite[i].setSize(sf::Vector2f(40, 30));
-        rank_sprite[i].setPosition(sf::Vector2f(x_coord, y_coord));
-        rank_sprite[i].setFillColor(sf::Color::White);
+        float x_coord, y_coord = 30 * (11 + (i % 4) * 2);
+        if (i < 4) {
+            x_coord = 80.f;
+        }
+        else if (i < 8) {
+            x_coord = 320.f;
+        }
+        else {
+            x_coord = 560.f;
+        }
 
+        // Init the score sprite
         score_sprite[i].setSize(sf::Vector2f(160, 30));
-        score_sprite[i].setPosition(sf::Vector2f(x_coord + 80, y_coord));
+        score_sprite[i].setPosition(sf::Vector2f(x_coord, y_coord));
         score_sprite[i].setFillColor(sf::Color::White);
 
-        rank_text[i].setFont(font);
-        rank_text[i].setCharacterSize(20);
-        rank_text[i].setPosition(sf::Vector2f(x_coord, y_coord));
-        rank_text[i].setFillColor(sf::Color::Black);
-        std::string rank_string = "#";
-        if(i < 9) rank_string += char('1' + i);
-        else rank_string += "10";
-        rank_text[i].setString(rank_string);
-
+        // Init the score text
         score_text[i].setFont(font);
         score_text[i].setCharacterSize(20);
-        score_text[i].setPosition(sf::Vector2f(x_coord + 80, y_coord));
+        score_text[i].setPosition(sf::Vector2f(x_coord, y_coord));
         score_text[i].setFillColor(sf::Color::Black);
-        std::string score_string;
-        input >> score_string;
+
+        // Set the string of each score text
+        float score_f;
+        input >> score_f;
+
+        std::string score_string = "#";
+        score_string += char('1' + i % 4);
+        score_string += ": ";
+        score_string += convertToString(score_f);
+
         score_text[i].setString(score_string);
     }
     input.close();
 
+    // Set up the reset button
+    // -----------------------
     sf::Texture reset_button_texture;
     reset_button_texture.loadFromFile("Game_Texture/Image/reset_button.jpg");
     ButtonClass reset_button;
-    reset_button = ButtonClass(sf::Vector2f(80, 30), sf::Vector2f(360, 540), reset_button_texture);
+    reset_button = ButtonClass(sf::Vector2f(80, 30), sf::Vector2f(360, 555), reset_button_texture);
 
     while(leader_board_window.isOpen())
     {
@@ -342,8 +380,10 @@ void LeaderBoardWindow()
                 std::ifstream input("high_scores.txt");
                 for(int i = 0; i < total_score; ++i)
                 {
-                    std::string score_string;
-                    input >> score_string;
+                    std::string score_string = "#";
+                    score_string += char('1' + i % 4);
+                    score_string += ": ";
+                    score_string += convertToString(0.f);
                     score_text[i].setString(score_string);
                 }
                 input.close();
@@ -356,13 +396,20 @@ void LeaderBoardWindow()
 
         leader_board_window.clear(sf::Color::White);
         leader_board_window.draw(leader_board_background);
+
+        // Draw the text indicating levels of difficulty: Beginner, Intermediate, Expert
+        for (int i = 0; i < 3; ++i) {
+            leader_board_window.draw(levels[i]);
+            leader_board_window.draw(levels_text[i]);
+        }
+
+        // Draw the score
         for(int i = 0 ; i < total_score; ++i)
         {
-            leader_board_window.draw(rank_sprite[i]);
             leader_board_window.draw(score_sprite[i]);
-            leader_board_window.draw(rank_text[i]);
             leader_board_window.draw(score_text[i]);
         }
+
         leader_board_window.draw(reset_button.button);
         leader_board_window.display();
     }

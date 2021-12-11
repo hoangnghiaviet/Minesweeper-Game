@@ -35,13 +35,6 @@ void GameWindow::initBoard() {
     clock.setFillColor(sf::Color::Black);
     clock.setPosition(sf::Vector2f(startPos_x, startPos_y + height * cellSize.y));
 
-    //Set up the score
-    score.setFont(font);
-    score.setCharacterSize(24);
-    score.setFillColor(sf::Color::Black);
-    score.setString("Score: 0");
-    score.setPosition(sf::Vector2f(startPos_x, startPos_y + height * cellSize.y + 30));
-
     //Set up the game ending message
     end_message.setFont(font);
     end_message.setCharacterSize(24);
@@ -119,7 +112,7 @@ void GameWindow::update() {
             if (cells[i].getGlobalBounds().contains(mousePosView)) {
                 int x = i % width, y = i / width;
 
-                int game_state = (*game_data).open_nearby_cells(x, y), new_num_moves;
+                int game_state = (*game_data).open_nearby_cells(x, y);
                 switch (game_state) {
                 case 1:
                     isGameLost = true;
@@ -127,17 +120,11 @@ void GameWindow::update() {
                     break;
                 case 0:
                     updateBoard();
-                    new_num_moves = (*game_data).return_num_moves();
-                    updateScore(new_num_moves);
                     break;
                 case -1:
                     //Open a cell
                     isGameLost = (*game_data).open_cell(x, y);
                     updateBoard();
-
-                    int new_num_moves = (*game_data).return_num_moves();
-                    updateScore(new_num_moves);
-
                     break;
                 }
             }
@@ -204,68 +191,40 @@ void GameWindow::updateClock(sf::Time new_time_elapsed) {
     clock.setString(clock_text);
 }
 
-//Convert the elapsed time in float to a HH:MM:SS string
-std::string GameWindow::convertToString(float time) {
-    std::string res;
-    if (time >= 3600) {
-        res += std::to_string(static_cast<int>(time / 3600)) + ": ";
-        time -= static_cast<int>(time / 3600) * 3600;
-    }
-    else {
-        res += "0: ";
-    }
-    if (time >= 60) {
-        res += std::to_string(static_cast<int>(time / 60)) + ": ";
-        time -= static_cast<int>(time / 60) * 60;
-    }
-    else {
-        res += "0: ";
-    }
-    res += std::to_string(static_cast<int>(time));
-    return res;
-}
-
-//Update the score based on time elapsed
-void GameWindow::updateScore(int new_num_moves) {
-    if (new_num_moves > current_num_moves) {
-        current_score = static_cast<int>(new_num_moves * 500 * (1 - 0.0005f * time_elapsed.asSeconds()));
-        std::string score_text = "Score: " + std::to_string(current_score);
-        score.setString(score_text);
-
-        current_num_moves = new_num_moves;
-    }
-}
-
 void GameWindow::saveCurrentScore() {
     std::ifstream input("high_scores.txt");
 
-    std::vector<int>scores;
+    std::vector<float>scores;
+
+    // Scores equal to 0 will be discarded
     for (int i = 0; i < 10; ++i) {
-        int tmp; input >> tmp;
+        float tmp; input >> tmp;
+        if (tmp == 0) {
+            break;
+        }
         scores.push_back(tmp);
     }
-    scores.push_back(current_score);
+    scores.push_back(time_elapsed.asSeconds());
 
-    //Sort in descending order
-    sort(scores.begin(), scores.end(), std::greater<int>());
+    // Sort the valid scores in an ascending order
+    sort(scores.begin(), scores.end());
 
     input.close();
 
     std::ofstream output("high_scores.txt", std::ofstream::out | std::ofstream::trunc);
 
-    //Only print out 5 highest scores
-    for (int i = 0; i < 10; ++i) {
+    int n = scores.size();
+    // Only print out 10 highest valid scores
+    for (int i = 0; i < n; ++i) {
         output << scores[i] << '\n';
     }
 
+    //Fill the remaining values with 0
+    for (int i = 0; i < 10 - n; ++i) {
+        output << 0 << "\n";
+    }
     output.close();
 
-}
-
-void GameWindow::loadSavedScore(int saved_score) {
-    current_score = saved_score;
-    std::string score_text = "Score: " + std::to_string(current_score);
-    score.setString(score_text);
 }
 
 //Handle the rendering of entities
@@ -275,7 +234,6 @@ void GameWindow::render() {
     window.draw(background);
 
     window.draw(clock);
-    window.draw(score);
 
     for (auto& cell : cells) {
         window.draw(cell);
@@ -300,7 +258,7 @@ void GameWindow::saveCurrentGame() {
     else {
         output
             << 1 << '\n'
-            << time_elapsed.asSeconds() << ' ' << current_score << '\n'
+            << time_elapsed.asSeconds() << '\n'
             << width << ' ' << height << '\n'
             << (*game_data).num_moves << ' ' << (*game_data).total_mines << '\n';
 
@@ -390,4 +348,26 @@ void GameWindow::updateBoard() {
             break;
         }
     }
+}
+
+// Convert a time value in float to a HH:MM:SS string
+// ------------------------------------------------------
+std::string convertToString(float time) {
+    std::string res;
+    if (time >= 3600) {
+        res += std::to_string(static_cast<int>(time / 3600)) + ": ";
+        time -= static_cast<int>(time / 3600) * 3600;
+    }
+    else {
+        res += "0: ";
+    }
+    if (time >= 60) {
+        res += std::to_string(static_cast<int>(time / 60)) + ": ";
+        time -= static_cast<int>(time / 60) * 60;
+    }
+    else {
+        res += "0: ";
+    }
+    res += std::to_string(static_cast<int>(time));
+    return res;
 }
