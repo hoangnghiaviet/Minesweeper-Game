@@ -40,23 +40,23 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
 
         //If there is not a valid game save, direct the player back to StartGameWindow()
         if (!isValidSave) {
-            sf::RenderWindow window(sf::VideoMode(1080, 720), "MineSweeper", sf::Style::Titlebar | sf::Style::Close);
+            sf::RenderWindow window(sf::VideoMode(800, 600), "MineSweeper", sf::Style::Titlebar | sf::Style::Close);
 
             sf::Texture background_t;
-            background_t.loadFromFile("game_texture/Image/background.jpg");
+            background_t.loadFromFile("game_texture/Image/InstructionWindow/instruction_background.png");
 
             sf::Sprite background;
             background.setTexture(background_t);
 
             sf::Font font;
-            font.loadFromFile("game_texture/Font/AppleII.ttf");
+            font.loadFromFile("game_texture/Font/kranky.ttf");
 
             sf::Text message;
             message.setFont(font);
             message.setCharacterSize(24);
             message.setFillColor(sf::Color::Black);
             //Put the message in the center
-            message.setPosition(sf::Vector2f(540.f - 360.f, 360 - 30.f));
+            message.setPosition(sf::Vector2f(105.f, 390.f));
             message.setString("No game saves are found! Press Esc to return to menu.");
 
             while (window.isOpen()) {

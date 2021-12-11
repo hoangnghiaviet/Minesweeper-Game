@@ -26,7 +26,7 @@ void GameWindow::initBoard() {
     }
 
     //Set up the background
-    background_t.loadFromFile("game_texture/Image/background.jpg");
+    background_t.loadFromFile("game_texture/Image/ingame_background.jpg");
     background.setTexture(background_t);
 
     //Set up the clock
@@ -46,7 +46,7 @@ void GameWindow::initBoard() {
     end_message.setFont(font);
     end_message.setCharacterSize(24);
     end_message.setFillColor(sf::Color::Black);
-    end_message.setPosition(sf::Vector2f(480, startPos_y - 65));
+    end_message.setPosition(sf::Vector2f(482, startPos_y - 65));
 
     //Set up replay game
     replay_button_texture.loadFromFile("game_texture/Image/replay_button.png");
@@ -270,11 +270,9 @@ void GameWindow::loadSavedScore(int saved_score) {
 
 //Handle the rendering of entities
 void GameWindow::render() {
-    unsigned redVal = static_cast<unsigned>((cos(time_elapsed.asSeconds()) / 4.0 + 0.75f) * 255.f);
-    unsigned greenVal = static_cast<unsigned>((sin(time_elapsed.asSeconds()) / 2.0 + 0.5f) * 255.f);
-    window.clear(sf::Color(redVal, greenVal, 255));
 
-    //window.draw(background);
+    window.clear();
+    window.draw(background);
 
     window.draw(clock);
     window.draw(score);
