@@ -169,10 +169,10 @@ void GameWindow::update() {
     //If game is ended, print out the game ending message
     if (this->isGameEnded()) {
         if (isGameWon) {
-            end_message.setString("You win!");
+            end_message.setString("You win! Press Esc");
         }
         else {
-            end_message.setString("You lose!");
+            end_message.setString("You lose! Press Esc");
         }
     }
 }
@@ -250,9 +250,11 @@ void GameWindow::loadSavedScore(int saved_score) {
 
 //Handle the rendering of entities
 void GameWindow::render() {
-    window.clear();
+    unsigned redVal = static_cast<unsigned>((cos(time_elapsed.asSeconds()) / 4.0 + 0.75f) * 255.f);
+    unsigned greenVal = static_cast<unsigned>((sin(time_elapsed.asSeconds()) / 2.0 + 0.5f) * 255.f);
+    window.clear(sf::Color(redVal, greenVal, 255));
 
-    window.draw(background);
+    //window.draw(background);
 
     window.draw(clock);
     window.draw(score);
