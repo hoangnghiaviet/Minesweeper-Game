@@ -30,7 +30,7 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
     bool isValidSave;
     float time_elapsed;
     unsigned width, height, num_mines;
-    int num_moves, score;
+    int num_moves;
     std::vector<std::vector<bool>>calculated;
     std::vector<std::vector<char>>mine_board, play_board;
 
@@ -202,7 +202,7 @@ void NewGameWindow()
     new_game_button.resize(total_new_game_button);
     for (int i = 0; i < total_new_game_button; ++i)
     {
-        new_game_button[i] = ButtonClass(sf::Vector2f(240.f, 30.f), sf::Vector2f(280, 270 + i * 60), new_game_button_texture[i]);
+        new_game_button[i] = ButtonClass(sf::Vector2f(240.f, 30.f), sf::Vector2f(280.f, static_cast<float>(270 + i * 60)), new_game_button_texture[i]);
     }
 
     while (new_game_window.isOpen())
@@ -304,7 +304,7 @@ void LeaderBoardWindow()
     std::ifstream input("high_scores.txt");
     for(int i = 0; i < 12; ++i)
     {
-        float x_coord, y_coord = 30 * (11 + (i % 4) * 2);
+        float x_coord, y_coord = static_cast<float>(30 * (11 + (i % 4) * 2));
         if (i < 4) {
             x_coord = 80.f;
         }
@@ -477,7 +477,7 @@ void InstructionWindow()
 
         std::string click = get_mouse_clicked();
         sf::Vector2i mouse_position = sf::Mouse::getPosition(instruction_window);
-        if (check_mouse_clicked(mouse_position, sf::Vector2f(85, 546.3), sf::Vector2f(18, 20.7)))
+        if (check_mouse_clicked(mouse_position, sf::Vector2f(85.f, 546.3f), sf::Vector2f(18.f, 20.7f)))
         {
             previous_button.setFillColor(sf::Color::Red);
             if (click == "left")
@@ -489,7 +489,7 @@ void InstructionWindow()
         {
             previous_button.setFillColor(sf::Color::White);
         }
-        if (check_mouse_clicked(mouse_position, sf::Vector2f(697, 543), sf::Vector2f(18, 20.7)))
+        if (check_mouse_clicked(mouse_position, sf::Vector2f(697.f, 543.f), sf::Vector2f(18.f, 20.7f)))
         {
             next_button.setFillColor(sf::Color::Red);
             if (click == "left")

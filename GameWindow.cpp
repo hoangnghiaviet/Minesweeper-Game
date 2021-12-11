@@ -192,37 +192,57 @@ void GameWindow::updateClock(sf::Time new_time_elapsed) {
 }
 
 void GameWindow::saveCurrentScore() {
+    int level;
+    if (width == 9 && height == 9) {
+        level = 0;
+    }
+    else if (width == 16 && height == 16) {
+        level = 1;
+    }
+    else if (width == 30 && height == 16) {
+        level = 2;
+    }
+    // If the game is in custom mode, we will not update the high scores list
+    else {
+        return;
+    }
     std::ifstream input("high_scores.txt");
 
     std::vector<float>scores;
-
-    // Scores equal to 0 will be discarded
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 12; ++i) {
         float tmp; input >> tmp;
-        if (tmp == 0) {
-            break;
-        }
         scores.push_back(tmp);
     }
-    scores.push_back(time_elapsed.asSeconds());
-
-    // Sort the valid scores in an ascending order
-    sort(scores.begin(), scores.end());
 
     input.close();
 
+    // Insert the current score into the high scores list
+    // --------------------------------------------------
+    float currentScore = time_elapsed.asSeconds();
+
+    int i = 0, score_size = 4;
+    for (; i < score_size; ++i) {
+        if (scores[score_size * level + i] == 0) {
+            scores[score_size * level + i] = currentScore;
+            break;
+        }
+    }
+    if (i < score_size) {
+        sort(scores.begin() + score_size * level, scores.begin() + score_size * level + i + 1);
+    }
+    else {
+        if (scores[score_size * level + 3] > currentScore) {
+            scores[score_size * level + 3] = currentScore;
+            sort(scores.begin() + score_size * level, scores.begin() + score_size * level + score_size);
+        }
+    }
+
     std::ofstream output("high_scores.txt", std::ofstream::out | std::ofstream::trunc);
 
-    int n = scores.size();
-    // Only print out 10 highest valid scores
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < 12; ++i) {
         output << scores[i] << '\n';
     }
 
-    //Fill the remaining values with 0
-    for (int i = 0; i < 10 - n; ++i) {
-        output << 0 << "\n";
-    }
     output.close();
 
 }
