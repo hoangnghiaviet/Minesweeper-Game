@@ -47,6 +47,12 @@ void GameWindow::initBoard() {
     end_message.setCharacterSize(24);
     end_message.setFillColor(sf::Color::Black);
     end_message.setPosition(sf::Vector2f(startPos_x, startPos_y - 35));
+
+    //Set up replay game
+    replay_button_texture.loadFromFile("game_texture/Image/replay_button.png");
+    replay_button.setSize(sf::Vector2f(20, 20));
+    replay_button.setTexture(&replay_button_texture);
+    replay_button.setPosition(sf::Vector2f(530, startPos_y - 30));
 }
 
 //Load the texture for each type of cell
@@ -177,6 +183,20 @@ void GameWindow::update() {
     }
 }
 
+//Check if player want to play again or not when game is ended
+bool GameWindow::isReplay() {
+    sf::Vector2i mousePosWindow = sf::Mouse::getPosition(window);
+    sf::Vector2f mousePosView = window.mapPixelToCoords(mousePosWindow);
+
+    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if(replay_button.getGlobalBounds().contains(mousePosView)) {
+            window.close();
+            return true;
+        }
+    }
+    return false;
+}
+
 //Update the clock
 void GameWindow::updateClock(sf::Time new_time_elapsed) {
     time_elapsed = new_time_elapsed + prev_time_elapsed;
@@ -220,7 +240,7 @@ void GameWindow::saveCurrentScore() {
     std::ifstream input("high_scores.txt");
 
     std::vector<int>scores;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
         int tmp; input >> tmp;
         scores.push_back(tmp);
     }
@@ -234,7 +254,7 @@ void GameWindow::saveCurrentScore() {
     std::ofstream output("high_scores.txt", std::ofstream::out | std::ofstream::trunc);
 
     //Only print out 5 highest scores
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
         output << scores[i] << '\n';
     }
 
@@ -265,6 +285,10 @@ void GameWindow::render() {
 
     if (this->isGameEnded()) {
         window.draw(end_message);
+    }
+
+    if(isReplayButton) {
+        window.draw(replay_button);
     }
 
     window.display();

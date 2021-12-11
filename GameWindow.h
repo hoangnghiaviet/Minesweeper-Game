@@ -30,6 +30,9 @@ public:
     //Update whenever there is a mouse click on a cell
     void update();
 
+    //Check if player want to play again or not when game is ended
+    bool isReplay();
+
     //Update the clock
     void updateClock(sf::Time);
 
@@ -55,7 +58,7 @@ public:
     //Destructors
     ~GameWindow();
 
-    friend void LoadGameWindow();
+    friend void LoadGameWindow(unsigned, unsigned, unsigned, bool);
 
 private:
     //Update the board whenever a move is made
@@ -100,5 +103,9 @@ private:
     bool isGameLost = false;
     bool isGameWon = false;
 
+    //Game replay
+    bool isReplayButton = false;
+    sf::Texture replay_button_texture;
+    sf::RectangleShape replay_button;
 };
 

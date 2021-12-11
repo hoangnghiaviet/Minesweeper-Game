@@ -7,14 +7,12 @@
 
 void openSelectedWindow(int window_number);
 
-void LoadGameWindow();
+void LoadGameWindow(unsigned, unsigned, unsigned, bool);
 
 void NewGameWindow();
 
-void InGameWindow(unsigned, unsigned, unsigned);
-
-//void LeaderBoardWindow();
+void LeaderBoardWindow();
 
 void InstructionWindow();
 
-//void AuthorWindow();
+void AuthorWindow();
