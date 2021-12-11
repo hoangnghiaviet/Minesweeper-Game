@@ -46,7 +46,7 @@ void GameWindow::initBoard() {
     end_message.setFont(font);
     end_message.setCharacterSize(24);
     end_message.setFillColor(sf::Color::Black);
-    end_message.setPosition(sf::Vector2f(startPos_x, startPos_y - 35));
+    end_message.setPosition(sf::Vector2f(480, startPos_y - 65));
 
     //Set up replay game
     replay_button_texture.loadFromFile("game_texture/Image/replay_button.png");
@@ -175,10 +175,10 @@ void GameWindow::update() {
     //If game is ended, print out the game ending message
     if (this->isGameEnded()) {
         if (isGameWon) {
-            end_message.setString("You win! Press Esc");
+            end_message.setString("You win!");
         }
         else {
-            end_message.setString("You lose! Press Esc");
+            end_message.setString("You lose");
         }
     }
 }
