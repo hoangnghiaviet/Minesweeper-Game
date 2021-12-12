@@ -53,6 +53,8 @@ public:
     friend void LoadGameWindow(unsigned, unsigned, unsigned, bool);
 
 private:
+    void updateRemainingMines();
+
     //Update the board whenever a move is made
     void updateBoard();
 
@@ -77,6 +79,9 @@ private:
     std::string clock_text = "0:0:0";
     sf::Time time_elapsed = sf::seconds(0.f);
     sf::Time prev_time_elapsed = sf::seconds(0.f);
+
+    //The number of remaining mines
+    sf::Text remaining_mines;
 
     //Game ending message
     sf::Text end_message;

@@ -9,6 +9,7 @@ class GameData {
 private:
 	int x_dimension = 0, y_dimension = 0, total_mines = 0;
 	int num_moves = 0, num_moves_max = 0;
+	int num_flags = 0;
 
 	std::vector<std::vector<char>>mine_board, play_board;
 	std::vector<std::vector<bool>>calculated;

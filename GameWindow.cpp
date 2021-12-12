@@ -33,19 +33,26 @@ void GameWindow::initBoard() {
     clock.setFont(font);
     clock.setCharacterSize(24);
     clock.setFillColor(sf::Color::Black);
-    clock.setPosition(sf::Vector2f(startPos_x, startPos_y + height * cellSize.y));
+    clock.setPosition(sf::Vector2f(startPos_x, startPos_y - 36.f));
+
+    //Set up the number of remaining mines
+    remaining_mines.setFont(font);
+    remaining_mines.setCharacterSize(24);
+    remaining_mines.setFillColor(sf::Color::Black);
+    remaining_mines.setPosition(sf::Vector2f(startPos_x + cellSize.x * (width - 1), startPos_y - 36.f));
+    remaining_mines.setString(std::to_string(game_data->total_mines));
 
     //Set up the game ending message
     end_message.setFont(font);
     end_message.setCharacterSize(24);
     end_message.setFillColor(sf::Color::Black);
-    end_message.setPosition(sf::Vector2f(482, startPos_y - 65));
+    end_message.setPosition(sf::Vector2f(482.f, startPos_y - 98.f));
 
     //Set up replay game
     replay_button_texture.loadFromFile("game_texture/Image/replay_button.png");
-    replay_button.setSize(sf::Vector2f(20, 20));
+    replay_button.setSize(sf::Vector2f(20.f, 20.f));
     replay_button.setTexture(&replay_button_texture);
-    replay_button.setPosition(sf::Vector2f(530, startPos_y - 30));
+    replay_button.setPosition(sf::Vector2f(530.f, startPos_y - 60.f));
 }
 
 //Load the texture for each type of cell
@@ -143,6 +150,7 @@ void GameWindow::update() {
 
                     (*game_data).set_flag(x, y);
                     updateBoard();
+                    updateRemainingMines();
                 }
             }
         }
@@ -192,14 +200,14 @@ void GameWindow::updateClock(sf::Time new_time_elapsed) {
 }
 
 void GameWindow::saveCurrentScore() {
-    int level;
-    if (width == 9 && height == 9) {
+    int level, num_mines = game_data->total_mines;
+    if (width == 9 && height == 9 && num_mines == 10) {
         level = 0;
     }
-    else if (width == 16 && height == 16) {
+    else if (width == 16 && height == 16 && num_mines == 40) {
         level = 1;
     }
-    else if (width == 30 && height == 16) {
+    else if (width == 30 && height == 16 && num_mines == 99) {
         level = 2;
     }
     // If the game is in custom mode, we will not update the high scores list
@@ -254,6 +262,7 @@ void GameWindow::render() {
     window.draw(background);
 
     window.draw(clock);
+    window.draw(remaining_mines);
 
     for (auto& cell : cells) {
         window.draw(cell);
@@ -322,6 +331,21 @@ GameWindow::~GameWindow() {
     delete[] game_data;
 }
 
+// Update the text of the number of remaining mines based on player's flags
+void GameWindow::updateRemainingMines() {
+    int num_remaining_mines = game_data->total_mines - game_data->num_flags;
+    if (num_remaining_mines < 0) {
+        num_remaining_mines = 0;
+    }
+
+    std::string remaining_mines_text;
+    if (num_remaining_mines < 10) {
+        remaining_mines_text += "0";
+    }
+    remaining_mines_text += std::to_string(num_remaining_mines);
+    remaining_mines.setString(remaining_mines_text);
+}
+
 //Update the board whenever a move is made
 void GameWindow::updateBoard() {
     if (isGameLost || isGameWon) {
@@ -374,20 +398,26 @@ void GameWindow::updateBoard() {
 // ------------------------------------------------------
 std::string convertToString(float time) {
     std::string res;
-    if (time >= 3600) {
-        res += std::to_string(static_cast<int>(time / 3600)) + ": ";
-        time -= static_cast<int>(time / 3600) * 3600;
-    }
-    else {
-        res += "0: ";
-    }
     if (time >= 60) {
-        res += std::to_string(static_cast<int>(time / 60)) + ": ";
-        time -= static_cast<int>(time / 60) * 60;
+        if (time >= 600) {
+            res += std::to_string(static_cast<int>(time / 60)) + ": ";
+            time -= static_cast<int>(time / 60) * 60;
+        }
+        else {
+            res += "0";
+            res += std::to_string(static_cast<int>(time / 60)) + ": ";
+            time -= static_cast<int>(time / 60) * 60;
+        }
     }
     else {
-        res += "0: ";
+        res += "00: ";
     }
-    res += std::to_string(static_cast<int>(time));
+    if (time >= 10) {
+        res += std::to_string(static_cast<int>(time));
+    }
+    else {
+        res += "0";
+        res += std::to_string(static_cast<int>(time));
+    }
     return res;
 }

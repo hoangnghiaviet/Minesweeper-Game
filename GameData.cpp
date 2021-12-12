@@ -194,9 +194,11 @@ void GameData::set_flag(int x, int y) {
 	}
 	if (play_board[x][y] == 'X') {
 		play_board[x][y] = 'F';
+		++num_flags;
 	}
 	else {
 		play_board[x][y] = 'X';
+		--num_flags;
 	}
 }
 

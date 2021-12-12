@@ -514,10 +514,41 @@ void AuthorWindow()
 {
     sf::RenderWindow author_window(sf::VideoMode(800, 600), "MineSweeper", sf::Style::Close);
 
+    // Set up the background
+    // ---------------------
     sf::Texture author_background_texture;
-    author_background_texture.loadFromFile("Game_Texture/Image/start_game_background.png");
+    author_background_texture.loadFromFile("Game_Texture/Image/author_background.png");
     sf::Sprite author_background;
     author_background.setTexture(author_background_texture);
+
+    // Set up the text
+    // ---------------
+    sf::Font font;
+    font.loadFromFile("game_texture/Font/kranky.ttf");
+
+    sf::RectangleShape viet_sprite;
+    viet_sprite.setSize(sf::Vector2f(280.f, 30.f));
+    viet_sprite.setPosition(sf::Vector2f(80.f, 540.f));
+    viet_sprite.setFillColor(sf::Color::White);
+
+    sf::Text viet_text;
+    viet_text.setFont(font);
+    viet_text.setCharacterSize(18);
+    viet_text.setFillColor(sf::Color::Black);
+    viet_text.setPosition(sf::Vector2f(100.f, 543.f));
+    viet_text.setString("21125027 - Hoang Nghia Viet");
+
+    sf::RectangleShape khanh_sprite;
+    khanh_sprite.setSize(sf::Vector2f(280.f, 30.f));
+    khanh_sprite.setPosition(sf::Vector2f(440.f, 540.f));
+    khanh_sprite.setFillColor(sf::Color::White);
+
+    sf::Text khanh_text;
+    khanh_text.setFont(font);
+    khanh_text.setCharacterSize(18);
+    khanh_text.setFillColor(sf::Color::Black);
+    khanh_text.setPosition(sf::Vector2f(449.f, 543.f));
+    khanh_text.setString("21125046 - Nguyen Tuan Khanh");
 
     while (author_window.isOpen())
     {
@@ -539,7 +570,14 @@ void AuthorWindow()
         }
 
         author_window.clear(sf::Color::White);
+
         author_window.draw(author_background);
+
+        author_window.draw(viet_sprite);
+        author_window.draw(viet_text);
+        author_window.draw(khanh_sprite);
+        author_window.draw(khanh_text);
+
         author_window.display();
     }
 }
