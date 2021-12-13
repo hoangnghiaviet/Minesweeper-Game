@@ -106,7 +106,7 @@ void GameWindow::update() {
     //Illuminate a cell if the mouse is hovering on the cell
     for (int i = 0; i < cells.size(); ++i) {
         if (cells[i].getGlobalBounds().contains(mousePosView)) {
-            cells[i].setFillColor(sf::Color::Cyan);
+            cells[i].setFillColor(sf::Color::Yellow);
         }
         else {
             cells[i].setFillColor(sf::Color::White);
