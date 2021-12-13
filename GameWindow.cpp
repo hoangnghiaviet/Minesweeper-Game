@@ -52,6 +52,7 @@ void GameWindow::initBoard() {
     smiley_face_texture.loadFromFile("game_texture/Cell/smile.png");
     winning_face_texture.loadFromFile("game_texture/Cell/win.png");
     losing_face_texture.loadFromFile("game_texture/Cell/lose.png");
+    surprised_face_texture.loadFromFile("game_texture/Cell/surprised.png");
 
     replay_button.setSize(sf::Vector2f(48.f, 48.f));
     replay_button.setTexture(&smiley_face_texture);
@@ -174,6 +175,7 @@ void GameWindow::update() {
     if (this->isGameEnded()) {
         if (isGameWon) {
             replay_button.setTexture(&winning_face_texture);
+            remaining_mines.setString("00");
         }
         else {
             replay_button.setTexture(&losing_face_texture);
