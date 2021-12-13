@@ -35,24 +35,27 @@ void GameWindow::initBoard() {
     clock.setFillColor(sf::Color::Black);
     clock.setPosition(sf::Vector2f(startPos_x, startPos_y - 36.f));
 
-    //Set up the number of remaining mines
+    // Set up the number of remaining mines
+    std::string remaining_mines_text;
+    if (game_data->total_mines < 10) {
+        remaining_mines_text = "0";
+    }
+    remaining_mines_text += std::to_string(game_data->total_mines);
+
     remaining_mines.setFont(font);
     remaining_mines.setCharacterSize(24);
     remaining_mines.setFillColor(sf::Color::Black);
     remaining_mines.setPosition(sf::Vector2f(startPos_x + cellSize.x * (width - 1), startPos_y - 36.f));
-    remaining_mines.setString(std::to_string(game_data->total_mines));
-
-    //Set up the game ending message
-    end_message.setFont(font);
-    end_message.setCharacterSize(24);
-    end_message.setFillColor(sf::Color::Black);
-    end_message.setPosition(sf::Vector2f(482.f, startPos_y - 98.f));
+    remaining_mines.setString(remaining_mines_text);
 
     //Set up replay game
-    replay_button_texture.loadFromFile("game_texture/Image/replay_button.png");
-    replay_button.setSize(sf::Vector2f(20.f, 20.f));
-    replay_button.setTexture(&replay_button_texture);
-    replay_button.setPosition(sf::Vector2f(530.f, startPos_y - 60.f));
+    smiley_face_texture.loadFromFile("game_texture/Cell/smile.png");
+    winning_face_texture.loadFromFile("game_texture/Cell/win.png");
+    losing_face_texture.loadFromFile("game_texture/Cell/lose.png");
+
+    replay_button.setSize(sf::Vector2f(48.f, 48.f));
+    replay_button.setTexture(&smiley_face_texture);
+    replay_button.setPosition(sf::Vector2f(515.f, startPos_y - 80.f));
 }
 
 //Load the texture for each type of cell
@@ -170,10 +173,10 @@ void GameWindow::update() {
     //If game is ended, print out the game ending message
     if (this->isGameEnded()) {
         if (isGameWon) {
-            end_message.setString("You win!");
+            replay_button.setTexture(&winning_face_texture);
         }
         else {
-            end_message.setString("You lose");
+            replay_button.setTexture(&losing_face_texture);
         }
     }
 }
@@ -183,8 +186,16 @@ bool GameWindow::isReplay() {
     sf::Vector2i mousePosWindow = sf::Mouse::getPosition(window);
     sf::Vector2f mousePosView = window.mapPixelToCoords(mousePosWindow);
 
-    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        if(replay_button.getGlobalBounds().contains(mousePosView)) {
+    // Illuminate the cell if the mouse is hovering on it
+    if (replay_button.getGlobalBounds().contains(mousePosView)) {
+        replay_button.setFillColor(sf::Color::Yellow);
+    }
+    else {
+        replay_button.setFillColor(sf::Color::White);
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if (replay_button.getGlobalBounds().contains(mousePosView)) {
             window.close();
             return true;
         }
@@ -268,13 +279,7 @@ void GameWindow::render() {
         window.draw(cell);
     }
 
-    if (this->isGameEnded()) {
-        window.draw(end_message);
-    }
-
-    if(isReplayButton) {
-        window.draw(replay_button);
-    }
+    window.draw(replay_button);
 
     window.display();
 }

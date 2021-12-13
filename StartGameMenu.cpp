@@ -158,13 +158,17 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
 
             sf::Time time_elapsed = clock.getElapsedTime();
             board.updateClock(time_elapsed);
+
+            if (board.isReplay()) {
+                LoadGameWindow(width, height, num_mines, 0);
+                return;
+            }
         }
         else {
             //Delete the data for games that have been won or lost
             board.saveCurrentGame();
 
-            board.isReplayButton = true;
-            if(board.isReplay()) {
+            if (board.isReplay()) {
                 LoadGameWindow(width, height, num_mines, 0);
                 return;
             }

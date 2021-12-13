@@ -96,8 +96,9 @@ private:
     bool isGameWon = false;
 
     //Game replay
-    bool isReplayButton = false;
-    sf::Texture replay_button_texture;
+    sf::Texture smiley_face_texture;
+    sf::Texture winning_face_texture;
+    sf::Texture losing_face_texture;
     sf::RectangleShape replay_button;
 };
 
