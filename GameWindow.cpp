@@ -12,7 +12,7 @@ void GameWindow::initBoard() {
 
     sf::Vector2f cellSize = sf::Vector2f(32.f, 32.f);
     float startPos_x = static_cast<float>(540 - (width * 32) / 2);
-    float startPos_y = static_cast<float>(360 - (height * 32) / 2);
+    float startPos_y = static_cast<float>(360 - (height * 32) / 2) + 20.f;
 
     //Populate the 2d cells array
     for (unsigned i = 0; i < height; ++i) {
