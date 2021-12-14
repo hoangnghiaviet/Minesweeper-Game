@@ -119,34 +119,42 @@ void GameWindow::update() {
 
     //Left mouse button -> Open a cell or open nearby cells
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        for (int i = 0; i < cells.size(); ++i) {
-            if (cells[i].getGlobalBounds().contains(mousePosView)) {
-                int x = i % width, y = i / width;
+        if (isLMBHeld == false) {
 
-                int game_state = (*game_data).open_nearby_cells(x, y);
-                switch (game_state) {
-                case 1:
-                    isGameLost = true;
-                    updateBoard();
-                    break;
-                case 0:
-                    updateBoard();
-                    break;
-                case -1:
-                    //Open a cell
-                    isGameLost = (*game_data).open_cell(x, y);
-                    updateBoard();
-                    break;
+            isLMBHeld = true;
+
+            for (int i = 0; i < cells.size(); ++i) {
+                if (cells[i].getGlobalBounds().contains(mousePosView)) {
+                    int x = i % width, y = i / width;
+
+                    int game_state = (*game_data).open_nearby_cells(x, y);
+                    switch (game_state) {
+                    case 1:
+                        isGameLost = true;
+                        updateBoard();
+                        break;
+                    case 0:
+                        updateBoard();
+                        break;
+                    case -1:
+                        //Open a cell
+                        isGameLost = (*game_data).open_cell(x, y);
+                        updateBoard();
+                        break;
+                    }
                 }
             }
         }
     }
+    else {
+        isLMBHeld = false;
+    }
 
     //Right mouse button -> Set flag
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-        if (isMouseHeld == false) {
+        if (isRMBHeld == false) {
 
-            isMouseHeld = true;
+            isRMBHeld = true;
 
             for (int i = 0; i < cells.size(); ++i) {
                 if (cells[i].getGlobalBounds().contains(mousePosView)) {
@@ -160,7 +168,7 @@ void GameWindow::update() {
         }
     }
     else {
-        isMouseHeld = false;
+        isRMBHeld = false;
     }
 
     //If game is won, merge the play_board and mine_board, print the winning message and save the score
@@ -188,17 +196,30 @@ bool GameWindow::isReplay() {
     sf::Vector2i mousePosWindow = sf::Mouse::getPosition(window);
     sf::Vector2f mousePosView = window.mapPixelToCoords(mousePosWindow);
 
-    // Illuminate the cell if the mouse is hovering on it
+    // Illuminate and change the texture of the replay button if the mouse is hovering on it
     if (replay_button.getGlobalBounds().contains(mousePosView)) {
         replay_button.setFillColor(sf::Color::Yellow);
+        replay_button.setTexture(&surprised_face_texture);
     }
     else {
         replay_button.setFillColor(sf::Color::White);
+
+        if (isGameWon) {
+            replay_button.setTexture(&winning_face_texture);
+        }
+        else if (isGameLost) {
+            replay_button.setTexture(&losing_face_texture);
+        }
+        else {
+            replay_button.setTexture(&smiley_face_texture);
+        }
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         if (replay_button.getGlobalBounds().contains(mousePosView)) {
-            window.close();
+            while (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                // do nothing and wait till the key is released
+            }
             return true;
         }
     }

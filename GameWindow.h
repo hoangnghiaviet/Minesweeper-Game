@@ -87,7 +87,8 @@ private:
     sf::Text end_message;
 
     //Input delay
-    bool isMouseHeld = false;
+    bool isLMBHeld = false;
+    bool isRMBHeld = false;
 
     //Game logic
     unsigned width, height;

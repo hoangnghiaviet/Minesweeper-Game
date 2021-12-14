@@ -160,8 +160,8 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
             board.updateClock(time_elapsed);
 
             if (board.isReplay()) {
+                board.window.close();
                 LoadGameWindow(width, height, num_mines, 0);
-                return;
             }
         }
         else {
@@ -169,8 +169,8 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
             board.saveCurrentGame();
 
             if (board.isReplay()) {
+                board.window.close();
                 LoadGameWindow(width, height, num_mines, 0);
-                return;
             }
         }
 
