@@ -189,8 +189,8 @@ void NewGameWindow()
     sf::Sprite new_game_background;
     new_game_background.setTexture(new_game_background_texture);
 
-    int total_new_game_button = 3;
-
+    int total_new_game_button = 4;
+    // Set up new game button texture
     std::vector<sf::Texture> new_game_button_texture;
     new_game_button_texture.resize(total_new_game_button);
     for (int i = 0; i < total_new_game_button; ++i)
@@ -202,11 +202,69 @@ void NewGameWindow()
         new_game_button_texture[i].loadFromFile(image_path);
     }
 
+    // Set up new game button
     std::vector<ButtonClass> new_game_button;
     new_game_button.resize(total_new_game_button);
     for (int i = 0; i < total_new_game_button; ++i)
     {
-        new_game_button[i] = ButtonClass(sf::Vector2f(240.f, 30.f), sf::Vector2f(280.f, static_cast<float>(270 + i * 60)), new_game_button_texture[i]);
+        if(i < 3)
+        {
+            new_game_button[i] = ButtonClass(sf::Vector2f(240.f, 30.f), sf::Vector2f(80.f, static_cast<float>(270 + i * 60)), new_game_button_texture[i]);
+        }
+        else
+        {
+            new_game_button[i] = ButtonClass(sf::Vector2f(240.f, 30.f), sf::Vector2f(480.f, static_cast<float>(270 + i * 60)), new_game_button_texture[i]);
+        }
+    }
+
+    int total_custom_button = 12;
+    std::vector<unsigned> custom_data(3, 5);
+    std::vector<unsigned> lim_custom_data({30, 16, 479});
+    std::vector<sf::Text> custom_data_text(3);
+    // Set up custom button texture
+    std::vector<sf::Texture> custom_button_texture;
+    custom_button_texture.resize(6);
+    for(int i = 0; i < 6; ++i)
+    {
+        char number = '0' + i;
+        std::string image_path = "Game_Texture/Image/NewGameWindow/custom_button";
+        image_path += number;
+        image_path += ".jpg";
+        custom_button_texture[i].loadFromFile(image_path);
+    }
+
+    // Set up custom button
+    std::vector<ButtonClass> custom_button;
+    custom_button.resize(total_custom_button);
+    for(int i = 0; i < total_custom_button; ++i)
+    {
+        int Id = i / 4;
+        switch(i % 4)
+        {
+        case 0:
+            custom_button[i] = ButtonClass(sf::Vector2f(80, 30), sf::Vector2f(480, 270 + Id * 60), custom_button_texture[i / 4]);
+            break;
+        case 1:
+            custom_button[i] = ButtonClass(sf::Vector2f(40, 30), sf::Vector2f(600, 270 + Id * 60), custom_button_texture[3]);
+            break;
+        case 2:
+            custom_button[i] = ButtonClass(sf::Vector2f(40, 30), sf::Vector2f(640, 270 + Id * 60), custom_button_texture[5]);
+            break;
+        case 3:
+            custom_button[i] = ButtonClass(sf::Vector2f(40, 30), sf::Vector2f(680, 270 + Id * 60), custom_button_texture[4]);
+            break;
+        }
+    }
+
+    // Set up custom font and text
+    sf::Font font;
+    font.loadFromFile("Game_Texture/Font/AppleII.ttf");
+    for(int i = 0; i < 3; ++i)
+    {
+        custom_data_text[i].setFont(font);
+        custom_data_text[i].setCharacterSize(20);
+        custom_data_text[i].setFillColor(sf::Color::Black);
+        custom_data_text[i].setPosition(sf::Vector2f(645, 273 + i * 60));
     }
 
     while (new_game_window.isOpen())
@@ -228,22 +286,100 @@ void NewGameWindow()
             }
         }
 
-        int clicked_button = get_button_clicked(new_game_button, total_new_game_button, new_game_window);
-        if (clicked_button != -1)
+        sf::Vector2i mousePosWindow = sf::Mouse::getPosition(new_game_window);
+        sf::Vector2f mousePosView = new_game_window.mapPixelToCoords(mousePosWindow);
+
+        for(int i = 0; i < total_new_game_button; ++i)
         {
-            new_game_window.close();
-            switch (clicked_button)
+            if(new_game_button[i].button.getGlobalBounds().contains(mousePosView))
             {
-            case 0:
-                LoadGameWindow(9, 9, 10, 0);
-                break;
-            case 1:
-                LoadGameWindow(16, 16, 40, 0);
-                break;
-            case 2:
-                LoadGameWindow(30, 16, 99, 0);
-                break;
+                new_game_button[i].button.setFillColor(sf::Color::Red);
             }
+            else
+            {
+                new_game_button[i].button.setFillColor(sf::Color::White);
+            }
+        }
+
+        std::string click = get_mouse_clicked();
+        if(click == "left")
+        {
+            if(new_game_button[0].button.getGlobalBounds().contains(mousePosView))
+            {
+                new_game_window.close();
+                LoadGameWindow(9, 9, 10, 0);
+                return;
+            }
+            if(new_game_button[1].button.getGlobalBounds().contains(mousePosView))
+            {
+                new_game_window.close();
+                LoadGameWindow(16, 16, 40, 0);
+                return;
+            }
+            if(new_game_button[2].button.getGlobalBounds().contains(mousePosView))
+            {
+                new_game_window.close();
+                LoadGameWindow(30, 16, 99, 0);
+                return;
+            }
+            if(new_game_button[3].button.getGlobalBounds().contains(mousePosView))
+            {
+                new_game_window.close();
+                LoadGameWindow(custom_data[0], custom_data[1], custom_data[2], 0);
+                return;
+            }
+            for(int i = 1; i < total_custom_button; i += 2)
+            {
+                if(custom_button[i].button.getGlobalBounds().contains(mousePosView))
+                {
+                    if(i % 4 == 1)
+                    {
+                        custom_data[i / 4]--;
+                    }
+                    else
+                    {
+                        custom_data[i / 4]++;
+                    }
+                }
+            }
+        }
+        if(click == "right")
+        {
+            for(int i = 1; i < total_custom_button; i += 2)
+            {
+                if(custom_button[i].button.getGlobalBounds().contains(mousePosView))
+                {
+                    if(i % 4 == 1)
+                    {
+                        custom_data[i / 4] -= 5;
+                    }
+                    else
+                    {
+                        custom_data[i / 4] += 5;
+                    }
+                }
+            }
+        }
+
+        for(int i = 0; i < 3; ++i)
+        {
+            if(i < 2)
+            {
+                custom_data[i] = std::max(custom_data[i], (unsigned)5);
+                custom_data[i] = std::min(custom_data[i], lim_custom_data[i]);
+            }
+            else
+            {
+                custom_data[i] = std::max(custom_data[i], (unsigned)1);
+                custom_data[i] = std::min(custom_data[i], custom_data[0] * custom_data[1] - 1);
+            }
+            std::string str = "";
+            unsigned tem = custom_data[i];
+            for(int j = 0; j < 2; ++j, tem /= 10)
+            {
+                str = (char)(tem % 10 + '0') + str;
+            }
+            custom_data_text[i].setString(str);
         }
 
         new_game_window.clear(sf::Color::White);
@@ -251,6 +387,14 @@ void NewGameWindow()
         for (int i = 0; i < total_new_game_button; ++i)
         {
             new_game_window.draw(new_game_button[i].button);
+        }
+        for(int i = 0; i < total_custom_button; ++i)
+        {
+            new_game_window.draw(custom_button[i].button);
+        }
+        for(int i = 0; i < 3; ++i)
+        {
+            new_game_window.draw(custom_data_text[i]);
         }
         new_game_window.display();
     }
