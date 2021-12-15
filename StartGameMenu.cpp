@@ -218,8 +218,8 @@ void NewGameWindow()
     }
 
     int total_custom_button = 12;
-    std::vector<unsigned> custom_data(3, 5);
-    std::vector<unsigned> lim_custom_data({30, 16, 479});
+    std::vector<int> custom_data(3, 5);
+    std::vector<int> lim_custom_data({30, 16, 99});
     std::vector<sf::Text> custom_data_text(3);
     // Set up custom button texture
     std::vector<sf::Texture> custom_button_texture;
@@ -301,6 +301,18 @@ void NewGameWindow()
             }
         }
 
+        for (int i = 1; i < total_custom_button; i = i + 2)
+        {
+            if (custom_button[i].button.getGlobalBounds().contains(mousePosView))
+            {
+                custom_button[i].button.setFillColor(sf::Color::Red);
+            }
+            else
+            {
+                custom_button[i].button.setFillColor(sf::Color::White);
+            }
+        }
+
         std::string click = get_mouse_clicked();
         if(click == "left")
         {
@@ -365,16 +377,16 @@ void NewGameWindow()
         {
             if(i < 2)
             {
-                custom_data[i] = std::max(custom_data[i], (unsigned)5);
+                custom_data[i] = std::max(custom_data[i], 5);
                 custom_data[i] = std::min(custom_data[i], lim_custom_data[i]);
             }
             else
             {
-                custom_data[i] = std::max(custom_data[i], (unsigned)1);
-                custom_data[i] = std::min(custom_data[i], custom_data[0] * custom_data[1] - 1);
+                custom_data[i] = std::max(custom_data[i], 1);
+                custom_data[i] = std::min(custom_data[i], 99);
             }
             std::string str = "";
-            unsigned tem = custom_data[i];
+            unsigned tem = static_cast<unsigned>(custom_data[i]);
             for(int j = 0; j < 2; ++j, tem /= 10)
             {
                 str = (char)(tem % 10 + '0') + str;
