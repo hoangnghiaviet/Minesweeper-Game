@@ -384,6 +384,7 @@ void NewGameWindow()
             {
                 custom_data[i] = std::max(custom_data[i], 1);
                 custom_data[i] = std::min(custom_data[i], 99);
+                custom_data[i] = std::min(custom_data[i], custom_data[0] * custom_data[1] - 1);
             }
             std::string str = "";
             unsigned tem = static_cast<unsigned>(custom_data[i]);
