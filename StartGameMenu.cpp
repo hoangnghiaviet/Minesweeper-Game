@@ -30,7 +30,7 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
     bool isValidSave;
     float time_elapsed;
     unsigned width, height, num_mines;
-    int num_moves;
+    int num_moves, num_flags;
     std::vector<std::vector<bool>>calculated;
     std::vector<std::vector<char>>mine_board, play_board;
 
@@ -92,7 +92,7 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
         //Load previous game
         input >> time_elapsed
             >> width >> height
-            >> num_moves >> num_mines;
+            >> num_moves >> num_mines >> num_flags;
 
         for (unsigned i = 0; i < width; ++i) {
             std::vector<bool>col;
@@ -138,11 +138,14 @@ void LoadGameWindow(unsigned _width, unsigned _height, unsigned _num_mines, bool
 
         //Set up the saved game data
         board.game_data->num_moves = num_moves;
+        board.game_data->num_flags = num_flags;
         board.game_data->calculated = calculated;
         board.game_data->mine_board = mine_board;
         board.game_data->play_board = play_board;
         board.updateBoard();
     }
+
+    board.updateRemainingMines();
 
     sf::Clock clock;
 

@@ -36,17 +36,10 @@ void GameWindow::initBoard() {
     clock.setPosition(sf::Vector2f(startPos_x, startPos_y - 36.f));
 
     // Set up the number of remaining mines
-    std::string remaining_mines_text;
-    if (game_data->total_mines < 10) {
-        remaining_mines_text = "0";
-    }
-    remaining_mines_text += std::to_string(game_data->total_mines);
-
     remaining_mines.setFont(font);
     remaining_mines.setCharacterSize(24);
     remaining_mines.setFillColor(sf::Color::Black);
     remaining_mines.setPosition(sf::Vector2f(startPos_x + cellSize.x * (width - 1), startPos_y - 36.f));
-    remaining_mines.setString(remaining_mines_text);
 
     //Set up replay game
     smiley_face_texture.loadFromFile("game_texture/Cell/smile.png");
@@ -162,6 +155,7 @@ void GameWindow::update() {
 
                     (*game_data).set_flag(x, y);
                     updateBoard();
+
                     updateRemainingMines();
                 }
             }
@@ -317,7 +311,7 @@ void GameWindow::saveCurrentGame() {
             << 1 << '\n'
             << time_elapsed.asSeconds() << '\n'
             << width << ' ' << height << '\n'
-            << (*game_data).num_moves << ' ' << (*game_data).total_mines << '\n';
+            << (*game_data).num_moves << ' ' << (*game_data).total_mines << ' ' << (*game_data).num_flags << '\n';
 
         for (unsigned i = 0; i < width; ++i) {
             for (unsigned j = 0; j < height; ++j) {
